@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Service Status — Oxagon Development</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:#2563EB; --blue-dark:#1D4ED8; --blue-light:#3B82F6; --blue-pale:#EFF6FF;
+      --green:#059669; --green-pale:#ECFDF5; --green-dot:#10B981;
+      --red:#DC2626; --red-pale:#FEF2F2; --red-dot:#EF4444;
+      --amber:#D97706; --amber-pale:#FFFBEB; --amber-dot:#F59E0B;
+      --white:#fff; --gray-50:#F8FAFC; --gray-100:#F1F5F9; --gray-200:#E2E8F0;
+      --gray-400:#94A3B8; --gray-500:#64748B; --gray-600:#475569; --dark:#0F172A;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--gray-50); color: var(--dark); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+    /* CONSENT */
+    .overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(15,23,42,0.72); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.3s ease both; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .consent { background: var(--white); max-width: 460px; width: 100%; border-top: 3px solid var(--blue); box-shadow: 0 32px 80px rgba(15,23,42,0.24); padding: 40px 36px 32px; animation: popIn 0.4s 0.08s cubic-bezier(0.16,1,0.3,1) both; }
+    @keyframes popIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: none; } }
+    .consent-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--blue-pale); border: 1px solid rgba(37,99,235,0.15); padding: 5px 12px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 18px; }
+    .consent h2 { font-family: 'Sora', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--dark); margin-bottom: 12px; }
+    .consent p { font-size: 0.9rem; line-height: 1.75; color: var(--gray-600); margin-bottom: 26px; }
+    .consent p a { color: var(--blue); font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(37,99,235,0.3); }
+    .consent-btns { display: flex; gap: 10px; }
+    .c-btn { flex: 1; padding: 12px 16px; font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: none; text-align: center; text-decoration: none; display: block; transition: all 0.18s; }
+    .c-primary { background: var(--blue); color: var(--white); }
+    .c-primary:hover { background: var(--blue-dark); transform: translateY(-1px); }
+    .c-secondary { background: transparent; color: var(--gray-600); border: 1.5px solid var(--gray-200); }
+    .c-secondary:hover { border-color: var(--blue); color: var(--blue); }
+    .consent-note { margin-top: 14px; font-size: 0.71rem; color: var(--gray-400); text-align: center; }
+
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 200; height: 66px; display: flex; align-items: center; justify-content: space-between; padding: 0 52px; background: rgba(255,255,255,0.97); backdrop-filter: blur(14px); border-bottom: 1px solid var(--gray-200); }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo img { width: 32px; height: 32px; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
+    .nav-wordmark { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; color: var(--dark); }
+    .nav-wordmark span { color: var(--blue); }
+    .nav-links { display: flex; align-items: center; gap: 6px; }
+    .nav-links a { text-decoration: none; font-size: 0.83rem; font-weight: 500; color: var(--gray-500); padding: 7px 14px; transition: all 0.15s; }
+    .nav-links a:hover { color: var(--dark); background: var(--gray-100); }
+    .nav-links a.pill { background: var(--blue); color: var(--white); font-weight: 600; }
+    .nav-links a.pill:hover { background: var(--blue-dark); }
+
+    /* HERO */
+    .page-hero { background: var(--dark); padding: 60px 52px 52px; position: relative; overflow: hidden; }
+    .page-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 55% 85% at 100% 50%, rgba(37,99,235,0.2) 0%, transparent 55%); }
+    .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 42px 42px; }
+    .hero-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
+    .hero-tag { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--blue-light); display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .hero-tag::before { content: ''; width: 22px; height: 1.5px; background: var(--blue-light); }
+    .page-hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; color: var(--white); letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 8px; }
+    .page-hero p { font-size: 0.87rem; color: rgba(255,255,255,0.35); }
+    .overall-pill { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); padding: 16px 22px; flex-shrink: 0; }
+    .o-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .o-dot.partial { background: var(--amber-dot); animation: blink 1.4s infinite; }
+    .overall-label { font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.8); }
+    .overall-sub { font-size: 0.72rem; color: rgba(255,255,255,0.32); margin-top: 2px; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+    /* MAIN */
+    .main { max-width: 860px; margin: 0 auto; padding: 48px 52px 100px; }
+    .meta-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 10px; }
+    .meta-bar span { font-size: 0.78rem; color: var(--gray-400); }
+    .refresh-btn { font-size: 0.78rem; font-weight: 600; color: var(--blue); cursor: pointer; background: none; border: none; display: flex; align-items: center; gap: 6px; transition: opacity 0.2s; }
+    .refresh-btn:hover { opacity: 0.7; }
+
+    /* SUMMARY */
+    .summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 40px; }
+    .summary-card { background: var(--white); border: 1px solid var(--gray-200); padding: 18px 20px; }
+    .summary-num { font-family: 'Sora', sans-serif; font-size: 1.9rem; font-weight: 800; line-height: 1; margin-bottom: 3px; }
+    .summary-lbl { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); }
+    .num-green { color: var(--green); }
+    .num-red { color: var(--red); }
+    .num-amber { color: var(--amber); }
+    .num-blue { color: var(--blue); }
+
+    /* SECTION TITLE */
+    .sec-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--gray-200); }
+
+    /* NOTICES */
+    .notice { border: 1px solid; padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
+    .notice-amber { background: var(--amber-pale); border-color: rgba(217,119,6,0.25); border-left: 3px solid var(--amber); }
+    .notice-red { background: var(--red-pale); border-color: rgba(220,38,38,0.2); border-left: 3px solid var(--red); }
+    .notice-blue { background: var(--blue-pale); border-color: rgba(37,99,235,0.2); border-left: 3px solid var(--blue); }
+    .notice-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .notice-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 3px; }
+    .notice-amber .notice-title { color: var(--amber); }
+    .notice-red .notice-title { color: var(--red); }
+    .notice-blue .notice-title { color: var(--blue); }
+    .notice-body { font-size: 0.82rem; color: var(--gray-600); line-height: 1.65; }
+
+    /* SERVICE CARDS */
+    .service-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 44px; }
+    .svc { background: var(--white); border: 1px solid var(--gray-200); padding: 18px 22px; display: flex; align-items: center; gap: 16px; transition: box-shadow 0.18s, transform 0.18s; }
+    .svc:hover { box-shadow: 0 4px 18px rgba(15,23,42,0.07); transform: translateY(-1px); }
+    .svc-ico { width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--gray-100); overflow: hidden; }
+    .svc-ico img { width: 28px; height: 28px; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
+    .svc-ico span { font-size: 1.2rem; }
+    .svc-info { flex: 1; min-width: 0; }
+    .svc-name { font-size: 0.96rem; font-weight: 600; color: var(--dark); margin-bottom: 2px; }
+    .svc-note { font-size: 0.79rem; color: var(--gray-400); }
+    .svc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+    .sbadge { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; }
+    .bd { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .s-online { background: var(--green-pale); color: var(--green); }
+    .s-online .bd { background: var(--green-dot); animation: blink 1.8s infinite; }
+    .s-offline { background: var(--red-pale); color: var(--red); }
+    .s-offline .bd { background: var(--red-dot); }
+    .s-maint { background: var(--amber-pale); color: var(--amber); }
+    .s-maint .bd { background: var(--amber-dot); animation: blink 1.2s infinite; }
+    .s-partial { background: var(--blue-pale); color: var(--blue); }
+    .s-partial .bd { background: var(--blue); animation: blink 1.5s infinite; }
+    .svc-reason { font-size: 0.73rem; color: var(--gray-400); text-align: right; }
+
+    /* GROUP LABEL */
+    .group-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-500); padding: 10px 0 6px; display: flex; align-items: center; gap: 10px; }
+    .group-label::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+
+    /* LEGEND */
+    .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--gray-200); }
+    .leg { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--gray-500); }
+    .leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* FOOTER */
+    footer { background: var(--dark); padding: 32px 52px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+    .footer-logo { display: flex; align-items: center; gap: 8px; }
+    .footer-logo img { width: 22px; height: 22px; object-fit: contain; opacity: 0.7; }
+    .footer-name { font-family: 'Sora', sans-serif; font-size: 0.88rem; color: rgba(255,255,255,0.42); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: rgba(255,255,255,0.28); text-decoration: none; font-size: 0.78rem; transition: color 0.2s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.75); }
+    .footer-copy { font-size: 0.7rem; color: rgba(255,255,255,0.18); }
+
+    @media (max-width: 768px) {
+      nav, .main, .page-hero, footer { padding-left: 20px; padding-right: 20px; }
+      .summary-row { grid-template-columns: 1fr 1fr; }
+      .svc-right { align-items: flex-start; }
+      .svc-reason { text-align: left; }
+      .consent-btns { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay">
+  <div class="consent">
+    <div class="consent-badge">📋 Policy Notice</div>
+    <h2>Before you continue</h2>
+    <p>By pressing <strong>Continue</strong>, you agree to the <a href="policies.html"><strong>Oxagon Development</strong> (and its services) policies</a>. Please review them before proceeding.</p>
+    <div class="consent-btns">
+      <button class="c-btn c-primary" onclick="closeConsent()">Continue</button>
+      <a href="policies.html" class="c-btn c-secondary">Read Policies</a>
+    </div>
+    <p class="consent-note">This notice appears each time you visit.</p>
+  </div>
+</div>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="oxagon-logo.png" alt="Oxagon Logo" />
+    <span class="nav-wordmark">Oxagon <span>Development</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="policies.html">Policies</a>
+    <a href="policies.html" class="pill">View Policies</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">Live Status</div>
+      <h1>Service Status</h1>
+      <p>Real-time status of all Oxagon Development services</p>
+    </div>
+    <div class="overall-pill">
+      <div class="o-dot partial"></div>
+      <div>
+        <div class="overall-label">Partial Outage</div>
+        <div class="overall-sub">Some services unavailable</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="meta-bar">
+    <span id="last-updated">Checking...</span>
+    <button class="refresh-btn" onclick="refreshTime()">↻ Refresh</button>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-row">
+    <div class="summary-card"><div class="summary-num num-green">1</div><div class="summary-lbl">Online</div></div>
+    <div class="summary-card"><div class="summary-num num-blue">1</div><div class="summary-lbl">Partial</div></div>
+    <div class="summary-card"><div class="summary-num num-amber">1</div><div class="summary-lbl">Maintenance</div></div>
+    <div class="summary-card"><div class="summary-num num-red">2</div><div class="summary-lbl">Offline</div></div>
+  </div>
+
+  <!-- NOTICES -->
+  <div class="sec-title" style="margin-bottom:14px;">Active Notices</div>
+  <div class="notice notice-blue">
+    <div class="notice-icon">🔵</div>
+    <div><div class="notice-title">Oxagon Development Servers — Partial Issues</div><div class="notice-body">Some issues have occurred on Oxagon Development servers. Some services may be slower than usual. Our team is monitoring the situation.</div></div>
+  </div>
+  <div class="notice notice-amber">
+    <div class="notice-icon">⚠️</div>
+    <div><div class="notice-title">OSN Bots & Services — Scheduled Maintenance</div><div class="notice-body">OSN Bots and Services are currently undergoing maintenance. We expect to restore full service soon. No data loss is expected.</div></div>
+  </div>
+  <div class="notice notice-red" style="margin-bottom:36px;">
+    <div class="notice-icon">🔴</div>
+    <div><div class="notice-title">SearchForHelp Beta — No Testing in Progress</div><div class="notice-body">The SearchForHelp Beta site is currently offline. No active testing is being conducted at this time.</div></div>
+  </div>
+
+  <!-- SERVICES -->
+  <div class="sec-title">All Services</div>
+
+  <div class="group-label">Oxagon Infrastructure</div>
+  <div class="service-list" style="margin-bottom:24px;">
+    <div class="svc">
+      <div class="svc-ico"><img src="oxagon-logo.png" alt="Oxagon" /></div>
+      <div class="svc-info">
+        <div class="svc-name">Oxagon Development Servers</div>
+        <div class="svc-note">Core infrastructure and hosting</div>
+      </div>
+      <div class="svc-right">
+        <span class="sbadge s-partial"><span class="bd"></span>Partial</span>
+        <span class="svc-reason">Some issues — services may be slower</span>
+      </div>
+    </div>
+    <div class="svc">
+      <div class="svc-ico"><span>🔧</span></div>
+      <div class="svc-info">
+        <div class="svc-name">ODSAS</div>
+        <div class="svc-note">Oxagon Development service platform</div>
+      </div>
+      <div class="svc-right">
+        <span class="sbadge s-offline"><span class="bd"></span>Offline</span>
+        <span class="svc-reason">Under development</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="group-label">OSN Services</div>
+  <div class="service-list" style="margin-bottom:24px;">
+    <div class="svc">
+      <div class="svc-ico"><img src="osn-logo.png" alt="OSN" /></div>
+      <div class="svc-info">
+        <div class="svc-name">OSN Bots & Services</div>
+        <div class="svc-note">Automated bots and community services</div>
+      </div>
+      <div class="svc-right">
+        <span class="sbadge s-maint"><span class="bd"></span>Maintenance</span>
+        <span class="svc-reason">Under maintenance</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="group-label">SearchForHelp</div>
+  <div class="service-list">
+    <div class="svc">
+      <div class="svc-ico"><span>🔍</span></div>
+      <div class="svc-info">
+        <div class="svc-name">SearchForHelp</div>
+        <div class="svc-note">Main search and help platform</div>
+      </div>
+      <div class="svc-right">
+        <span class="sbadge s-online"><span class="bd"></span>Online</span>
+        <span class="svc-reason">Fully operational</span>
+      </div>
+    </div>
+    <div class="svc">
+      <div class="svc-ico"><span>🧪</span></div>
+      <div class="svc-info">
+        <div class="svc-name">SearchForHelp Beta</div>
+        <div class="svc-note">Beta testing environment</div>
+      </div>
+      <div class="svc-right">
+        <span class="sbadge s-offline"><span class="bd"></span>Offline</span>
+        <span class="svc-reason">No testing being done</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:var(--green-dot)"></div>Online</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--blue)"></div>Partial — degraded performance</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--amber-dot)"></div>Maintenance — temporarily unavailable</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--red-dot)"></div>Offline — not available</div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">
+    <img src="oxagon-logo.png" alt="Oxagon" />
+    <span class="footer-name">Oxagon Development</span>
+  </div>
+  <div class="footer-links"><a href="index.html">Home</a><a href="policies.html">Policies</a></div>
+  <span class="footer-copy">© 2025 Oxagon Development. All rights reserved.</span>
+</footer>
+
+<script>
+  function closeConsent() {
+    const o = document.getElementById('overlay');
+    o.style.transition = 'opacity 0.28s ease';
+    o.style.opacity = '0';
+    setTimeout(() => o.remove(), 300);
+  }
+  function refreshTime() {
+    const now = new Date();
+    document.getElementById('last-updated').textContent = 'Last updated: ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  }
+  refreshTime();
+</script>
+</body>
+</html>
