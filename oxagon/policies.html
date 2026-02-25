@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Policies — Oxagon Development</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #2563EB;
+      --blue-dark: #1D4ED8;
+      --blue-light: #3B82F6;
+      --blue-pale: #EFF6FF;
+      --white: #fff;
+      --gray-50: #F8FAFC;
+      --gray-100: #F1F5F9;
+      --gray-200: #E2E8F0;
+      --gray-300: #CBD5E1;
+      --gray-400: #94A3B8;
+      --gray-500: #64748B;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1E293B;
+      --dark: #0F172A;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--gray-50); color: var(--dark); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+
+    /* ── CONSENT ── */
+    .overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(15,23,42,0.7); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+      animation: fadeIn 0.3s ease both;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .consent {
+      background: var(--white); max-width: 460px; width: 100%;
+      border-top: 3px solid var(--blue);
+      box-shadow: 0 32px 80px rgba(15,23,42,0.24);
+      padding: 40px 36px 32px;
+      animation: popIn 0.4s 0.08s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes popIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: none; } }
+    .consent-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue-pale); border: 1px solid rgba(37,99,235,0.15);
+      padding: 5px 12px; font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 18px;
+    }
+    .consent h2 { font-family: 'Sora', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--dark); margin-bottom: 12px; }
+    .consent p { font-size: 0.9rem; line-height: 1.75; color: var(--gray-600); margin-bottom: 26px; }
+    .consent p a { color: var(--blue); font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(37,99,235,0.3); }
+    .consent-btns { display: flex; gap: 10px; }
+    .c-btn { flex: 1; padding: 12px 16px; font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: none; text-align: center; text-decoration: none; display: block; transition: all 0.18s; }
+    .c-primary { background: var(--blue); color: var(--white); }
+    .c-primary:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,0.32); }
+    .c-secondary { background: transparent; color: var(--gray-600); border: 1.5px solid var(--gray-200); }
+    .c-secondary:hover { border-color: var(--blue); color: var(--blue); }
+    .consent-note { margin-top: 14px; font-size: 0.71rem; color: var(--gray-400); text-align: center; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 200; height: 66px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 60px;
+      background: rgba(255,255,255,0.97); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .hex { width: 28px; height: 28px; background: var(--blue); clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); animation: hexPulse 4s ease-in-out infinite; }
+    @keyframes hexPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    .nav-wordmark { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; color: var(--dark); }
+    .nav-wordmark span { color: var(--blue); }
+    .nav-back { text-decoration: none; font-size: 0.83rem; font-weight: 500; color: var(--gray-500); display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .nav-back:hover { color: var(--blue); }
+
+    /* ── HERO ── */
+    .page-hero {
+      background: var(--dark); padding: 68px 60px 60px;
+      position: relative; overflow: hidden;
+    }
+    .page-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 55% 85% at 100% 50%, rgba(37,99,235,0.2) 0%, transparent 55%);
+      animation: glow 6s ease-in-out infinite alternate;
+    }
+    @keyframes glow { from { opacity: 0.5; } to { opacity: 1; } }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 42px 42px;
+    }
+    .page-hero-inner { max-width: 1000px; margin: 0 auto; position: relative; z-index: 2; }
+    .hero-tag { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--blue-light); display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .hero-tag::before { content: ''; width: 22px; height: 1.5px; background: var(--blue-light); }
+    .page-hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: var(--white); letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 12px; }
+    .page-hero p { font-size: 0.88rem; color: rgba(255,255,255,0.35); }
+
+    /* ── LAYOUT ── */
+    .layout { max-width: 1080px; margin: 0 auto; padding: 52px 60px 100px; display: grid; grid-template-columns: 220px 1fr; gap: 56px; align-items: start; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { position: sticky; top: 86px; }
+
+    .toc-card { background: var(--white); border: 1px solid var(--gray-200); overflow: hidden; box-shadow: 0 1px 6px rgba(15,23,42,0.05); }
+
+    .toc-header { padding: 14px 20px; background: var(--blue); }
+    .toc-header span { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.9); }
+
+    .toc-nav { padding: 6px 0; }
+    .toc-nav a {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 9px 18px; text-decoration: none;
+      transition: all 0.15s; border-left: 2px solid transparent;
+    }
+    .toc-nav a:hover { background: var(--blue-pale); border-left-color: var(--blue); }
+    .toc-nav a.active { background: var(--blue-pale); border-left-color: var(--blue); }
+
+    .toc-num { font-size: 0.64rem; font-weight: 700; color: var(--blue); letter-spacing: 0.06em; min-width: 28px; margin-top: 2px; }
+    .toc-name { font-size: 0.82rem; font-weight: 500; color: var(--gray-600); line-height: 1.4; }
+    .toc-nav a:hover .toc-name, .toc-nav a.active .toc-name { color: var(--blue); font-weight: 600; }
+
+    /* ── CONTENT ── */
+    .content { min-width: 0; }
+
+    .policy-block {
+      background: var(--white); border: 1px solid var(--gray-200);
+      margin-bottom: 20px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(15,23,42,0.04);
+      transition: box-shadow 0.2s;
+    }
+    .policy-block:hover { box-shadow: 0 4px 20px rgba(15,23,42,0.08); }
+
+    .block-head {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 28px; border-bottom: 1px solid var(--gray-100);
+      background: linear-gradient(90deg, rgba(37,99,235,0.03), transparent 60%);
+    }
+
+    .block-num {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--blue);
+      background: var(--blue-pale); border: 1px solid rgba(37,99,235,0.2);
+      padding: 4px 10px; flex-shrink: 0;
+    }
+
+    .block-head h2 { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; color: var(--dark); line-height: 1.3; }
+
+    .block-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 22px; }
+
+    .sub { border-bottom: 1px solid var(--gray-100); padding-bottom: 22px; }
+    .sub:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .sub-label { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+
+    .sub p { font-size: 0.93rem; line-height: 1.82; color: var(--gray-600); }
+    .sub p + p { margin-top: 8px; }
+
+    .sub ul { margin-top: 10px; display: flex; flex-direction: column; }
+    .sub ul li {
+      font-size: 0.92rem; line-height: 1.7; color: var(--gray-600);
+      padding: 8px 0 8px 22px; position: relative;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .sub ul li:last-child { border-bottom: none; }
+    .sub ul li::before { content: ''; position: absolute; left: 6px; top: 16px; width: 5px; height: 5px; background: var(--blue); border-radius: 50%; }
+
+    .callout { background: var(--blue-pale); border-left: 3px solid var(--blue); padding: 12px 16px; margin-top: 12px; font-size: 0.88rem; line-height: 1.7; color: var(--gray-700); }
+
+    .e-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .e-tag { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; padding: 7px 14px; border: 1px solid var(--gray-200); color: var(--gray-600); background: var(--white); transition: all 0.15s; cursor: default; }
+    .e-tag:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-pale); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark); padding: 32px 60px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 8px; }
+    .footer-hex { width: 20px; height: 20px; background: var(--blue); opacity: 0.6; clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); }
+    .footer-name { font-family: 'Sora', sans-serif; font-size: 0.88rem; color: rgba(255,255,255,0.42); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: rgba(255,255,255,0.28); text-decoration: none; font-size: 0.78rem; transition: color 0.2s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.75); }
+    .footer-copy { font-size: 0.7rem; color: rgba(255,255,255,0.18); }
+
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; padding: 32px 20px 72px; gap: 32px; }
+      .sidebar { position: static; }
+      nav, .page-hero, footer { padding-left: 20px; padding-right: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CONSENT -->
+<div class="overlay" id="overlay">
+  <div class="consent">
+    <div class="consent-badge">📋 Policy Notice</div>
+    <h2>Before you continue</h2>
+    <p>By pressing <strong>Continue</strong>, you agree to the <a href="policies.html"><strong>Oxagon Development</strong> (and its services) policies</a>. Please review them before proceeding.</p>
+    <div class="consent-btns">
+      <button class="c-btn c-primary" onclick="closeConsent()">Continue</button>
+      <a href="#s1" class="c-btn c-secondary" onclick="closeConsent()">Read Below</a>
+    </div>
+    <p class="consent-note">This notice appears each time you visit.</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="hex"></div>
+    <span class="nav-wordmark">Oxagon <span>Development</span></span>
+  </a>
+  <a class="nav-back" href="index.html">← Back to Home</a>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="hero-grid"></div>
+  <div class="page-hero-inner">
+    <div class="hero-tag">Legal & Community</div>
+    <h1>Oxagon Development Policies</h1>
+    <p>Effective immediately upon participation · Last updated 2025</p>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="toc-card">
+      <div class="toc-header"><span>Contents</span></div>
+      <nav class="toc-nav">
+        <a href="#s1"><span class="toc-num">§01</span><span class="toc-name">ROW Policy</span></a>
+        <a href="#s2"><span class="toc-num">§02</span><span class="toc-name">Privacy Policy</span></a>
+        <a href="#s3"><span class="toc-num">§03</span><span class="toc-name">Automatic Agreement</span></a>
+        <a href="#s4"><span class="toc-num">§04</span><span class="toc-name">Conduct & Community</span></a>
+        <a href="#s5"><span class="toc-num">§05</span><span class="toc-name">Enforcement</span></a>
+        <a href="#s6"><span class="toc-num">§06</span><span class="toc-name">Policy Supremacy</span></a>
+        <a href="#s7"><span class="toc-num">§07</span><span class="toc-name">Modification Rights</span></a>
+        <a href="#s8"><span class="toc-num">§08</span><span class="toc-name">Severability</span></a>
+        <a href="#s9"><span class="toc-num">§09</span><span class="toc-name">Good-Faith Principle</span></a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <div class="policy-block" id="s1">
+      <div class="block-head"><span class="block-num">§ 01</span><h2>ROW Policy — Rights of Origin & Watermark Integrity</h2></div>
+      <div class="block-body">
+        <div class="sub">
+          <div class="sub-label">1.1 · Ownership and Origin</div>
+          <p>All content, software, designs, media, documentation, branding elements, and derivative works created, distributed, or authorized under the Organization are protected intellectual property.</p>
+          <p>A ROW identifier constitutes proof of origin and ownership.</p>
+        </div>
+        <div class="sub">
+          <div class="sub-label">1.2 · Integrity Protection</div>
+          <p>The following actions are prohibited without explicit authorization:</p>
+          <ul>
+            <li>Removal or alteration of ROW identifiers</li>
+            <li>Obscuring or covering watermarks</li>
+            <li>Redistributing modified protected content without permission</li>
+            <li>Claiming ownership of protected material</li>
+            <li>Attempting to bypass watermark protections</li>
+          </ul>
+          <div class="callout">Circumvention of ROW protections constitutes unauthorized modification of protected property regardless of medium or intent.</div>
+        </div>
+        <div class="sub">
+          <div class="sub-label">1.3 · Enforcement Authority</div>
+          <p>The Organization reserves the right to issue takedown requests, restrict access, suspend or terminate accounts, revoke permissions, and apply network-wide bans.</p>
+        </div>
+        <div class="sub">
+          <div class="sub-label">1.4 · Persistence Clause</div>
+          <p>ROW protections remain in effect permanently, including after a user leaves any community or service.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="policy-block" id="s2">
+      <div class="block-head"><span class="block-num">§ 02</span><h2>Privacy Policy — Minimal Data & Human Verification</h2></div>
+      <div class="block-body">
+        <div class="sub">
+          <div class="sub-label">2.1 · Limited Data Storage</div>
+          <p>The Organization does not collect or store personal data beyond what is strictly necessary to operate accounts. Stored information may include account identifiers, login credentials, and basic operational records. No unnecessary tracking or profiling is performed.</p>
+        </div>
+        <div class="sub">
+          <div class="sub-label">2.2 · Verification Data Handling</div>
+          <p>If verification requires face images, identification documents, or similar materials:</p>
+          <ul>
+            <li>Data is used only for one-time verification</li>
+            <li>Data is not permanently stored</li>
+            <li>Data is deleted immediately after verification</li>
+            <li>No biometric database is created</li>
+          </ul>
+        </div>
+        <div class="sub">
+          <div class="sub-label">2.3 · Human Review Guarantee</div>
+          <p>Verification processes are performed by authorized human reviewers, not automated AI decision systems. Automation may assist technically, but final decisions are made by humans.</p>
+        </div>
+        <div class="sub">
+          <div class="sub-label">2.4 · Temporary Processing Clause</div>
+          <p>Sensitive materials exist only temporarily during processing and are removed after verification within a reasonable timeframe.</p>
+        </div>
+        <div class="sub">
+          <div class="sub-label">2.5 · No Sale or Sharing</div>
+          <p>The Organization does not sell or trade personal data. Data may only be shared when required for service operation, required by law, or authorized by the user.</p>
+        </div>
+        <div class="sub">
+          <div class="sub-label">2.6 · Security Disclaimer</div>
+          <p>Reasonable safeguards are used, but no system can guarantee absolute security.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="policy-block" id="s3">
+      <div class="block-head"><span class="block-num">§ 03</span><h2>Automatic Agreement Policy — Binding Acceptance</h2></div>
+      <div class="block-body">
+        <div class="sub">
+          <div class="sub-label">3.1 · Conditions of Acceptance</div>
+          <p>A person is considered to have agreed if they:</p>
+          <ul>
+            <li>Join an OSN server or community</li>
+            <li>Use any application or service</li>
+            <li>Create an account</li>
+            <li>Continue use after policies are presented</li>
+          </ul>
+          <div class="callout">Participation constitutes acceptance without a written signature.</div>
+        </div>
+        <div class="sub">
+          <div class="sub-label">3.2 · Scope of Agreement</div>
+          <p>Policies apply across all Organization platforms, future updates, associated systems, and interactions with other agreeing members.</p>
+        </div>
+        <div class="sub">
+          <div class="sub-label">3.3 · Continuing Obligation</div>
+          <p>Obligations remain enforceable after leaving, deleting accounts, or discontinuing use.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="policy-block" id="s4">
+      <div class="block-head"><span class="block-num">§ 04</span><h2>OSN Conduct & Community Protection Policy</h2></div>
+      <div class="block-body">
+        <div class="sub">
+          <div class="sub-label">4.1 · Respect and Safety</div>
+          <p>Users must not engage in harassment, bullying, threats, discrimination, or targeted attacks.</p>
+        </div>
+        <div class="sub">
+          <div class="sub-label">4.2 · External Harm Policy</div>
+          <p>Users who agreed to policies must not create or distribute content intended to harm, harass, or maliciously target other agreeing members, staff, administrators, or the Organization and its projects. This applies even outside Organization platforms when related to the community.</p>
+        </div>
+        <div class="sub">
+          <div class="sub-label">4.3 · Media and Video Restrictions</div>
+          <p>Prohibited content includes:</p>
+          <ul>
+            <li>Misleading or manipulated media intended to cause harm</li>
+            <li>False allegations presented as fact</li>
+            <li>Exposure of private information</li>
+            <li>Coordinated harassment</li>
+          </ul>
+          <div class="callout">Legitimate criticism is allowed if it is non-abusive and non-defamatory.</div>
+        </div>
+        <div class="sub">
+          <div class="sub-label">4.4 · Anti-Exploitation Rule</div>
+          <p>Users must not exploit vulnerabilities, bypass safeguards, or abuse permissions.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="policy-block" id="s5">
+      <div class="block-head"><span class="block-num">§ 05</span><h2>Enforcement Framework</h2></div>
+      <div class="block-body">
+        <div class="sub">
+          <p>Violations may result in the following actions. Severity determines the level of enforcement applied.</p>
+          <div class="e-tags">
+            <span class="e-tag">Warning</span>
+            <span class="e-tag">Restrictions</span>
+            <span class="e-tag">Content Removal</span>
+            <span class="e-tag">Temporary Suspension</span>
+            <span class="e-tag">Permanent Ban</span>
+            <span class="e-tag">Account Termination</span>
+            <span class="e-tag">Network-Wide Revocation</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="policy-block" id="s6">
+      <div class="block-head"><span class="block-num">§ 06</span><h2>Policy Supremacy Clause</h2></div>
+      <div class="block-body">
+        <div class="sub">
+          <p>If conflicts exist between policies, the interpretation providing greater protection to safety, organizational integrity, intellectual property, and community stability shall prevail.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="policy-block" id="s7">
+      <div class="block-head"><span class="block-num">§ 07</span><h2>Modification Rights</h2></div>
+      <div class="block-body">
+        <div class="sub">
+          <p>Policies may be updated at any time without prior notice. Continued use of any Oxagon Development service after updates constitutes acceptance of the revised terms.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="policy-block" id="s8">
+      <div class="block-head"><span class="block-num">§ 08</span><h2>Severability</h2></div>
+      <div class="block-body">
+        <div class="sub">
+          <p>If any clause or provision is found to be invalid or unenforceable, all remaining provisions remain fully effective and binding.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="policy-block" id="s9">
+      <div class="block-head"><span class="block-num">§ 09</span><h2>Good-Faith Principle</h2></div>
+      <div class="block-body">
+        <div class="sub">
+          <p>Users agree not to exploit loopholes or ambiguities within these policies. Attempts to bypass rules through technicalities may still be treated as violations at the Organization's sole discretion.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <div class="footer-hex"></div>
+    <span class="footer-name">Oxagon Development</span>
+  </div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="status.html">Status</a>
+  </div>
+  <span class="footer-copy">© 2025 Oxagon Development. All rights reserved.</span>
+</footer>
+
+<script>
+  const sections = document.querySelectorAll('.policy-block[id]');
+  const links = document.querySelectorAll('.toc-nav a');
+
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 110) cur = s.id; });
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+  }, { passive: true });
+
+  function closeConsent() {
+    const o = document.getElementById('overlay');
+    o.style.transition = 'opacity 0.28s ease';
+    o.style.opacity = '0';
+    setTimeout(() => o.remove(), 300);
+  }
+</script>
+</body>
+</html>

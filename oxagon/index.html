@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oxagon Development</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #2563EB;
+      --blue-dark: #1D4ED8;
+      --blue-xdark: #1E40AF;
+      --blue-light: #3B82F6;
+      --blue-pale: #EFF6FF;
+      --white: #fff;
+      --gray-50: #F8FAFC;
+      --gray-100: #F1F5F9;
+      --gray-200: #E2E8F0;
+      --gray-400: #94A3B8;
+      --gray-500: #64748B;
+      --gray-600: #475569;
+      --gray-800: #1E293B;
+      --dark: #0F172A;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--white); color: var(--dark); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+    /* ── CONSENT ── */
+    .overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(15,23,42,0.7); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+      animation: fadeIn 0.3s ease both;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .consent {
+      background: var(--white); max-width: 460px; width: 100%;
+      border-top: 3px solid var(--blue);
+      box-shadow: 0 32px 80px rgba(15,23,42,0.24);
+      padding: 40px 36px 32px;
+      animation: popIn 0.4s 0.08s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes popIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: none; } }
+
+    .consent-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue-pale); border: 1px solid rgba(37,99,235,0.15);
+      padding: 5px 12px; font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue);
+      margin-bottom: 18px;
+    }
+
+    .consent h2 { font-family: 'Sora', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--dark); margin-bottom: 12px; }
+    .consent p { font-size: 0.9rem; line-height: 1.75; color: var(--gray-600); margin-bottom: 26px; }
+    .consent p a { color: var(--blue); font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(37,99,235,0.3); }
+    .consent p a:hover { border-color: var(--blue); }
+
+    .consent-btns { display: flex; gap: 10px; }
+    .c-btn {
+      flex: 1; padding: 12px 16px; font-family: 'Inter', sans-serif;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      border: none; text-align: center; text-decoration: none; display: block;
+      transition: all 0.18s;
+    }
+    .c-primary { background: var(--blue); color: var(--white); }
+    .c-primary:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,0.32); }
+    .c-secondary { background: transparent; color: var(--gray-600); border: 1.5px solid var(--gray-200); }
+    .c-secondary:hover { border-color: var(--blue); color: var(--blue); }
+    .consent-note { margin-top: 14px; font-size: 0.71rem; color: var(--gray-400); text-align: center; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 66px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 60px;
+      background: rgba(255,255,255,0.96); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--gray-200);
+      animation: slideDown 0.5s ease both;
+    }
+    @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .hex { width: 28px; height: 28px; background: var(--blue); clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); animation: hexPulse 4s ease-in-out infinite; }
+    @keyframes hexPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    .nav-wordmark { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; color: var(--dark); }
+    .nav-wordmark span { color: var(--blue); }
+
+    .nav-links { display: flex; align-items: center; gap: 6px; }
+    .nav-links a {
+      text-decoration: none; font-size: 0.83rem; font-weight: 500;
+      color: var(--gray-500); padding: 7px 14px; transition: all 0.15s;
+    }
+    .nav-links a:hover { color: var(--dark); background: var(--gray-100); }
+    .nav-links a.pill {
+      background: var(--blue); color: var(--white); padding: 8px 20px; font-weight: 600;
+    }
+    .nav-links a.pill:hover { background: var(--blue-dark); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 40px 80px;
+      position: relative; overflow: hidden; background: var(--white);
+    }
+    .hero-glow {
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 65% 50% at 50% 105%, rgba(37,99,235,0.08) 0%, transparent 60%),
+                  radial-gradient(ellipse 30% 35% at 88% 8%, rgba(59,130,246,0.06) 0%, transparent 55%);
+      animation: glowPulse 7s ease-in-out infinite alternate;
+    }
+    @keyframes glowPulse { from { opacity: 0.6; } to { opacity: 1; } }
+    .hero-dots {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle, rgba(15,23,42,0.06) 1px, transparent 1px);
+      background-size: 26px 26px;
+    }
+
+    .hero-content { position: relative; z-index: 2; max-width: 680px; }
+
+    .hero-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue-pale); border: 1px solid rgba(37,99,235,0.2);
+      color: var(--blue); padding: 6px 16px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 30px; animation: fadeUp 0.7s 0.15s ease both;
+    }
+    .live-dot { width: 7px; height: 7px; background: var(--blue); border-radius: 50%; animation: blink 1.6s infinite; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.15; } }
+
+    .hero h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5rem); font-weight: 800;
+      line-height: 1.08; letter-spacing: -0.03em; color: var(--dark);
+      margin-bottom: 22px; animation: fadeUp 0.7s 0.28s ease both;
+    }
+    .hero h1 span { color: var(--blue); }
+
+    .hero p {
+      font-size: 1.05rem; line-height: 1.78; color: var(--gray-500);
+      max-width: 460px; margin: 0 auto 40px; animation: fadeUp 0.7s 0.42s ease both;
+    }
+
+    .hero-btns {
+      display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+      animation: fadeUp 0.7s 0.56s ease both;
+    }
+    .btn-blue {
+      background: var(--blue); color: var(--white); padding: 14px 28px;
+      font-size: 0.9rem; font-weight: 600; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 18px rgba(37,99,235,0.3);
+      transition: all 0.2s;
+    }
+    .btn-blue:hover { background: var(--blue-dark); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,99,235,0.38); }
+    .btn-outline {
+      background: transparent; color: var(--gray-700); padding: 14px 28px;
+      font-size: 0.9rem; font-weight: 600; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1.5px solid var(--gray-200); transition: all 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+
+    /* ── BAND ── */
+    .band {
+      background: var(--dark); padding: 56px 60px;
+      display: flex; align-items: center; justify-content: center; gap: 52px; flex-wrap: wrap;
+      position: relative; overflow: hidden;
+    }
+    .band::before {
+      content: ''; position: absolute; inset: 0;
+      background: repeating-linear-gradient(90deg, rgba(37,99,235,0.07) 0, rgba(37,99,235,0.07) 1px, transparent 1px, transparent 60px);
+    }
+    .band-item { text-align: center; position: relative; z-index: 1; }
+    .band-num { font-family: 'Sora', sans-serif; font-size: 2.4rem; font-weight: 800; color: var(--blue-light); line-height: 1; margin-bottom: 5px; }
+    .band-lbl { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
+    .band-sep { width: 1px; height: 48px; background: rgba(255,255,255,0.07); }
+
+    /* ── CONSTRUCTION ── */
+    .construction {
+      padding: 110px 60px; background: var(--gray-50);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .construction::before {
+      content: ''; position: absolute; top: -90px; left: 50%; transform: translateX(-50%);
+      width: 420px; height: 420px; background: rgba(37,99,235,0.04);
+      clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+      animation: hexSpin 28s linear infinite;
+    }
+    @keyframes hexSpin { from { transform: translateX(-50%) rotate(0deg); } to { transform: translateX(-50%) rotate(360deg); } }
+
+    .construction-inner { max-width: 520px; margin: 0 auto; position: relative; z-index: 2; }
+    .construction h2 {
+      font-family: 'Sora', sans-serif; font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 700; color: var(--dark); margin-bottom: 14px; letter-spacing: -0.02em;
+    }
+    .construction p { font-size: 0.97rem; line-height: 1.77; color: var(--gray-500); margin-bottom: 36px; }
+
+    .progress-card { background: var(--white); border: 1px solid var(--gray-200); padding: 24px 28px; box-shadow: 0 2px 10px rgba(15,23,42,0.05); text-align: left; }
+    .progress-lbl { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 12px; }
+    .progress-bar { height: 6px; background: var(--gray-100); border-radius: 99px; overflow: hidden; margin-bottom: 12px; }
+    .progress-fill { height: 100%; width: 32%; background: linear-gradient(90deg, var(--blue), var(--blue-light)); border-radius: 99px; animation: prog 2.2s ease-in-out infinite; }
+    @keyframes prog { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+    .progress-note { font-size: 0.81rem; color: var(--gray-500); }
+    .progress-note strong { color: var(--blue); font-weight: 600; }
+
+    /* ── STATUS PAGE PREVIEW ── */
+    .services {
+      padding: 100px 60px; background: var(--white);
+    }
+    .services-inner { max-width: 920px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 52px; }
+    .section-tag {
+      display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--blue); background: var(--blue-pale);
+      padding: 5px 14px; margin-bottom: 14px;
+    }
+    .section-header h2 {
+      font-family: 'Sora', sans-serif; font-size: clamp(1.7rem, 4vw, 2.3rem);
+      font-weight: 700; color: var(--dark); letter-spacing: -0.02em; margin-bottom: 10px;
+    }
+    .section-header p { font-size: 0.95rem; color: var(--gray-500); }
+
+    .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; }
+
+    .service-card {
+      background: var(--white); border: 1px solid var(--gray-200);
+      padding: 24px 26px; display: flex; align-items: center; gap: 18px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .service-card:hover { box-shadow: 0 6px 24px rgba(15,23,42,0.08); transform: translateY(-2px); }
+
+    .service-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; background: var(--gray-100);
+    }
+
+    .service-info { flex: 1; min-width: 0; }
+    .service-name { font-size: 0.95rem; font-weight: 600; color: var(--dark); margin-bottom: 3px; }
+    .service-desc { font-size: 0.8rem; color: var(--gray-400); }
+
+    .service-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.06em; flex-shrink: 0;
+    }
+    .badge-dot-sm { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    .status-online { background: #ECFDF5; color: #059669; }
+    .status-online .badge-dot-sm { background: #10B981; animation: blink 1.8s infinite; }
+    .status-offline { background: #FEF2F2; color: #DC2626; }
+    .status-offline .badge-dot-sm { background: #EF4444; }
+    .status-maintenance { background: #FFFBEB; color: #D97706; }
+    .status-maintenance .badge-dot-sm { background: #F59E0B; animation: blink 1.2s infinite; }
+
+    .view-status-btn { text-align: center; margin-top: 36px; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark); padding: 32px 60px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .footer-logo { display: flex; align-items: center; gap: 8px; }
+    .footer-hex { width: 20px; height: 20px; background: var(--blue); opacity: 0.6; clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); }
+    .footer-name { font-family: 'Sora', sans-serif; font-size: 0.88rem; color: rgba(255,255,255,0.42); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: rgba(255,255,255,0.28); text-decoration: none; font-size: 0.78rem; transition: color 0.2s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.75); }
+    .footer-copy { font-size: 0.7rem; color: rgba(255,255,255,0.18); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+    @media (max-width: 768px) {
+      nav, .band, .construction, .services, footer { padding-left: 20px; padding-right: 20px; }
+      .hero { padding: 100px 20px 60px; }
+      .service-grid { grid-template-columns: 1fr; }
+      .band-sep { display: none; }
+      .consent { padding: 28px 22px 24px; }
+      .consent-btns { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CONSENT -->
+<div class="overlay" id="overlay">
+  <div class="consent">
+    <div class="consent-badge">📋 Policy Notice</div>
+    <h2>Before you continue</h2>
+    <p>By pressing <strong>Continue</strong>, you agree to the <a href="policies.html"><strong>Oxagon Development</strong> (and its services) policies</a>. Please review them before proceeding.</p>
+    <div class="consent-btns">
+      <button class="c-btn c-primary" onclick="closeConsent()">Continue</button>
+      <a href="policies.html" class="c-btn c-secondary">Read Policies</a>
+    </div>
+    <p class="consent-note">This notice appears each time you visit.</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="hex"></div>
+    <span class="nav-wordmark">Oxagon <span>Development</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="status.html">Status</a>
+    <a href="policies.html">Policies</a>
+    <a href="policies.html" class="pill">View Policies</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-dots"></div>
+  <div class="hero-content">
+    <div class="hero-pill"><span class="live-dot"></span>Under Development</div>
+    <h1>Oxagon<br /><span>Development</span></h1>
+    <p>We're building something great. Our full website is on its way — our official policies are available for review right now.</p>
+    <div class="hero-btns">
+      <a href="policies.html" class="btn-blue">View Policies →</a>
+      <a href="status.html" class="btn-outline">Service Status</a>
+    </div>
+  </div>
+</section>
+
+<!-- BAND -->
+<div class="band">
+  <div class="band-item"><div class="band-num">9</div><div class="band-lbl">Policy Sections</div></div>
+  <div class="band-sep"></div>
+  <div class="band-item"><div class="band-num">4</div><div class="band-lbl">Services</div></div>
+  <div class="band-sep"></div>
+  <div class="band-item"><div class="band-num">24/7</div><div class="band-lbl">Policy Access</div></div>
+  <div class="band-sep"></div>
+  <div class="band-item"><div class="band-num">∞</div><div class="band-lbl">In Progress</div></div>
+</div>
+
+<!-- CONSTRUCTION -->
+<section class="construction" id="status">
+  <div class="construction-inner">
+    <h2>The website is still under development.</h2>
+    <p>Our team is working hard on delivering a full experience. Our policies and service status are available in the meantime.</p>
+    <div class="progress-card">
+      <div class="progress-lbl">Build Progress</div>
+      <div class="progress-bar"><div class="progress-fill"></div></div>
+      <div class="progress-note"><strong>Policies & Status pages are live.</strong> Full site launching soon.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES PREVIEW -->
+<section class="services">
+  <div class="services-inner">
+    <div class="section-header">
+      <div class="section-tag">Service Status</div>
+      <h2>Current System Status</h2>
+      <p>Live status of all Oxagon Development services.</p>
+    </div>
+    <div class="service-grid">
+      <div class="service-card">
+        <div class="service-icon">🔧</div>
+        <div class="service-info">
+          <div class="service-name">ODSAS</div>
+          <div class="service-desc">Under development — not yet available</div>
+        </div>
+        <span class="service-badge status-offline"><span class="badge-dot-sm"></span>Offline</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🤖</div>
+        <div class="service-info">
+          <div class="service-name">OSN Bots & Services</div>
+          <div class="service-desc">Currently under maintenance</div>
+        </div>
+        <span class="service-badge status-maintenance"><span class="badge-dot-sm"></span>Maintenance</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🔍</div>
+        <div class="service-info">
+          <div class="service-name">SearchForHelp</div>
+          <div class="service-desc">Fully operational</div>
+        </div>
+        <span class="service-badge status-online"><span class="badge-dot-sm"></span>Online</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🧪</div>
+        <div class="service-info">
+          <div class="service-name">SearchForHelp Beta</div>
+          <div class="service-desc">No testing being done</div>
+        </div>
+        <span class="service-badge status-offline"><span class="badge-dot-sm"></span>Offline</span>
+      </div>
+    </div>
+    <div class="view-status-btn">
+      <a href="status.html" class="btn-outline">View Full Status Page →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <div class="footer-hex"></div>
+    <span class="footer-name">Oxagon Development</span>
+  </div>
+  <div class="footer-links">
+    <a href="status.html">Status</a>
+    <a href="policies.html">Policies</a>
+  </div>
+  <span class="footer-copy">© 2025 Oxagon Development. All rights reserved.</span>
+</footer>
+
+<script>
+  function closeConsent() {
+    const o = document.getElementById('overlay');
+    o.style.transition = 'opacity 0.28s ease';
+    o.style.opacity = '0';
+    setTimeout(() => o.remove(), 300);
+  }
+</script>
+</body>
+</html>
