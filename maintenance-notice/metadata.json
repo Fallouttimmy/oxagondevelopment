@@ -1,0 +1,6 @@
+{
+  "name": "Maintenance Notice",
+  "description": "A temporary site maintenance notice styled in warm orange.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
