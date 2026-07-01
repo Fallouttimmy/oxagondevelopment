@@ -5,7 +5,7 @@ export default function Navbar() {
   const location = useLocation();
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "Policies", path: "/" },
+    { name: "Policies", path: "/policies" },
   ];
 
   return (
