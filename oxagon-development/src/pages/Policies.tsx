@@ -14,11 +14,11 @@ const SubsectionTitle = ({ children }: { children: ReactNode }) => (
 );
 
 const Paragraph = ({ children }: { children: ReactNode }) => (
-  <p className="text-gray-400 leading-relaxed mb-4">{children}</p>
+  <p className="text-gray-400 leading-relaxed mb-4 break-words whitespace-normal">{children}</p>
 );
 
 const Callout = ({ children }: { children: ReactNode }) => (
-  <div className="my-6 p-4 rounded-lg bg-white/5 border border-white/10 text-gray-300 italic border-l-4 border-l-white">
+  <div className="my-6 p-4 rounded-lg bg-white/5 border border-white/10 text-gray-300 italic border-l-4 border-l-white break-words whitespace-normal">
     {children}
   </div>
 );
@@ -159,7 +159,7 @@ export default function Policies() {
                 "Legitimate criticism is allowed if it is non-abusive and non-defamatory."
               </Callout>
               <Callout>
-                <strong>Enforcement Limitation Disclaimer:</strong> If a server or service is operated as part of the OSN but is not directly owned or controlled by Oxagon Development, enforcement action is limited to warnings and community-level restrictions. The Organization cannot unilaterally remove or terminate server operations under these circumstances, as we lack direct administrative control over independently-operated infrastructure. Violations by server administrators or owners in such cases may require escalation, arbitration, or community intervention rather than direct enforcement action.
+                <strong>Enforcement Limitation Disclaimer:</strong> If a server or service is operated as part of the OSN but is not directly owned or controlled by Oxagon Development, enforcemen[...]
               </Callout>
 
               <SubsectionTitle><span className="text-white/50 text-base">4.4</span> Anti-Exploitation Rule:</SubsectionTitle>
