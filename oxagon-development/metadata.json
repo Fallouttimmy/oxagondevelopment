@@ -1,0 +1,6 @@
+{
+  "name": "Oxagon Development",
+  "description": "Oxagon Development organization policies and home page.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
