@@ -45,6 +45,9 @@ export default function Policies() {
             <p className="text-gray-400 text-lg mb-8">
               Official guidelines, terms, and agreements for Oxagon Development.
             </p>
+            <Callout>
+              <strong>A Note on Strictness:</strong> You may notice these policies are exceptionally strict. Because we are a small organization, we simply do not have the size or resources to fight legal battles or manage disputes with extensive resources. Our policies are designed to maintain community integrity and protect our work.
+            </Callout>
           </header>
 
           <div className="space-y-12">
@@ -154,6 +157,9 @@ export default function Policies() {
               </Paragraph>
               <Callout>
                 "Legitimate criticism is allowed if it is non-abusive and non-defamatory."
+              </Callout>
+              <Callout>
+                <strong>Enforcement Limitation Disclaimer:</strong> If a server or service is operated as part of the OSN but is not directly owned or controlled by Oxagon Development, enforcement relies on the applicable server's moderation team. Oxagon Development is not liable for violations occurring on third-party platforms under independent moderation.
               </Callout>
 
               <SubsectionTitle><span className="text-white/50 text-base">4.4</span> Anti-Exploitation Rule:</SubsectionTitle>
