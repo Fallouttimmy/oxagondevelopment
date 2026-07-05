@@ -45,9 +45,6 @@ export default function Policies() {
             <p className="text-gray-400 text-lg mb-8">
               Official guidelines, terms, and agreements for Oxagon Development.
             </p>
-            <Callout>
-              <strong>A Note on Strictness:</strong> You may notice these policies are exceptionally strict. Because we are a small organization, we simply do not have the size or resources to fight legal battles or manage disputes with extensive resources. Our policies are designed to maintain community integrity and protect our work.
-            </Callout>
           </header>
 
           <div className="space-y-12">
@@ -57,12 +54,12 @@ export default function Policies() {
               
               <SubsectionTitle><span className="text-white/50 text-base">1.1</span> Ownership and Origin:</SubsectionTitle>
               <Paragraph>
-                All content, software, designs, media, documentation, branding elements, and derivative works created, distributed, or authorized under the Organization are protected intellectual property of Oxagon Development. All creators assign ownership rights to the Organization upon creation while under the Organization's authorization.
+                All content, software, designs, media, documentation, branding elements, and derivative works created, distributed, or authorized under the Organization are protected intellectual property. A ROW identifier constitutes proof of origin and ownership.
               </Paragraph>
 
               <SubsectionTitle><span className="text-white/50 text-base">1.2</span> Integrity Protection:</SubsectionTitle>
               <Paragraph>
-                The following are prohibited without explicit authorization: removal or alteration of ROW identifiers; obscuring or covering watermarks; redistributing modified protected content without attribution; claiming authorship of Organization content; removing branding or credits; altering source attribution in any form.
+                The following are prohibited without explicit authorization: removal or alteration of ROW identifiers; obscuring or covering watermarks; redistributing modified protected content without permission; claiming ownership of protected material; attempting to bypass watermark protections.
               </Paragraph>
               <Callout>
                 "Circumvention of ROW protections constitutes unauthorized modification of protected property regardless of medium or intent."
@@ -85,12 +82,12 @@ export default function Policies() {
               
               <SubsectionTitle><span className="text-white/50 text-base">2.1</span> Limited Data Storage:</SubsectionTitle>
               <Paragraph>
-                The Organization does not collect or store personal data beyond what is strictly necessary to operate accounts. Stored information may include account identifiers, login credentials, email addresses, and account verification status. No personal information is shared with third parties without explicit user consent or legal obligation.
+                The Organization does not collect or store personal data beyond what is strictly necessary to operate accounts. Stored information may include account identifiers, login credentials, and basic operational records. No unnecessary tracking or profiling is performed.
               </Paragraph>
 
               <SubsectionTitle><span className="text-white/50 text-base">2.2</span> Verification Data Handling:</SubsectionTitle>
               <Paragraph>
-                If verification requires face images, identification documents, or similar materials: data is used only for one-time verification; not permanently stored; deleted immediately after verification is complete; only accessed by authorized human reviewers; never shared with third parties; retained for audit purposes only if legally required.
+                If verification requires face images, identification documents, or similar materials: data is used only for one-time verification; not permanently stored; deleted immediately after verification; no biometric database is created.
               </Paragraph>
 
               <SubsectionTitle><span className="text-white/50 text-base">2.3</span> Human Review Guarantee:</SubsectionTitle>
@@ -148,7 +145,7 @@ export default function Policies() {
 
               <SubsectionTitle><span className="text-white/50 text-base">4.2</span> External Harm Policy:</SubsectionTitle>
               <Paragraph>
-                Users must not create or distribute content intended to harm, harass, or maliciously target other agreeing members, staff, administrators, or the Organization and its projects. This includes intentional spread of false information designed to damage reputation or relationships within the community.
+                Users must not create or distribute content intended to harm, harass, or maliciously target other agreeing members, staff, administrators, or the Organization and its projects. This applies even outside Organization platforms when related to the community.
               </Paragraph>
 
               <SubsectionTitle><span className="text-white/50 text-base">4.3</span> Media and Video Restrictions:</SubsectionTitle>
@@ -157,9 +154,6 @@ export default function Policies() {
               </Paragraph>
               <Callout>
                 "Legitimate criticism is allowed if it is non-abusive and non-defamatory."
-              </Callout>
-              <Callout>
-                <strong>Enforcement Limitation Disclaimer:</strong> If a server or service is operated as part of the OSN but is not directly owned or controlled by Oxagon Development, enforcement relies on the applicable server's moderation team. Oxagon Development is not liable for violations occurring on third-party platforms under independent moderation.
               </Callout>
 
               <SubsectionTitle><span className="text-white/50 text-base">4.4</span> Anti-Exploitation Rule:</SubsectionTitle>
@@ -223,7 +217,7 @@ export default function Policies() {
 
               <SubsectionTitle><span className="text-white/50 text-base">10.1</span> Waiver of Legal Action:</SubsectionTitle>
               <Paragraph>
-                By using any Oxagon Development service, users expressly waive the right to bring any lawsuit, legal claim, civil proceeding, or other legal action against Oxagon Development, its staff, administrators, or members. Users agree to settle disputes exclusively through the dispute resolution process outlined in this policy.
+                By using any Oxagon Development service, users expressly waive the right to bring any lawsuit, legal claim, civil proceeding, or other legal action against Oxagon Development, its founders, staff, administrators, moderators, affiliates, or representatives. This waiver covers all claims arising from: use of any service, enforcement of policies, account actions, data handling, service outages, or any interaction with the Organization or its members.
               </Paragraph>
               <Callout>
                 "Participation in any Oxagon Development service constitutes full and knowing acceptance of this waiver. If you do not agree, you must discontinue use immediately."
@@ -231,27 +225,27 @@ export default function Policies() {
 
               <SubsectionTitle><span className="text-white/50 text-base">10.2</span> No Warranty:</SubsectionTitle>
               <Paragraph>
-                All services are provided "as-is" and "as-available" without warranty of any kind. No guarantees on uptime, availability, accuracy, security, or fitness for any particular purpose are made, whether express or implied.
+                All services are provided "as-is" and "as-available" without warranty of any kind. No guarantees on uptime, availability, accuracy, security, or fitness for any particular purpose. The Organization is not liable for loss of data, service interruptions, errors, or damages of any kind.
               </Paragraph>
 
               <SubsectionTitle><span className="text-white/50 text-base">10.3</span> Indemnification:</SubsectionTitle>
               <Paragraph>
-                Users agree to indemnify and hold harmless Oxagon Development from any claims, damages, losses, or expenses (including legal fees) arising from: violation of these policies; misuse of services; unauthorized access; infringement of third-party rights; or breach of applicable laws.
+                Users agree to indemnify and hold harmless Oxagon Development from any claims, damages, losses, or expenses (including legal fees) arising from: violation of these policies; misuse of any service; content posted or shared by the user; any action by the user that causes harm to others or the Organization.
               </Paragraph>
 
               <SubsectionTitle><span className="text-white/50 text-base">10.4</span> Dispute Resolution:</SubsectionTitle>
               <Paragraph>
-                Disputes must follow this process — Step 1: good-faith negotiation with the Organization directly within 30 days. Step 2: if unresolved, binding arbitration (not court litigation) before a neutral arbitrator. Step 3: arbitration decisions are final and enforceable.
+                Disputes must follow this process — Step 1: good-faith negotiation with the Organization directly within 30 days. Step 2: if unresolved, binding arbitration (not court litigation). Step 3: users waive the right to participate in any class action lawsuit or class-wide arbitration.
               </Paragraph>
 
               <SubsectionTitle><span className="text-white/50 text-base">10.5</span> Limitation of Damages:</SubsectionTitle>
               <Paragraph>
-                Total liability shall not exceed the greater of: (a) the amount paid by the user in the 12 months preceding the claim, or (b) zero if no payment was made. The Organization is not liable for indirect, incidental, punitive, or consequential damages.
+                Total liability shall not exceed the greater of: (a) the amount paid by the user in the 12 months preceding the claim, or (b) zero if no payment was made. The Organization is not liable for any indirect, incidental, consequential, punitive, or special damages.
               </Paragraph>
 
               <SubsectionTitle><span className="text-white/50 text-base">10.6</span> Jurisdiction Disclaimer:</SubsectionTitle>
               <Paragraph>
-                Oxagon Development does not represent that its services are appropriate or lawful in all jurisdictions. Users who access services from locations where such use is unlawful do so at their own risk and responsibility.
+                Oxagon Development does not represent that its services are appropriate or lawful in all jurisdictions. Users who access services from locations where such use is unlawful do so at their own risk and are solely responsible for compliance with local laws.
               </Paragraph>
             </section>
           </div>
