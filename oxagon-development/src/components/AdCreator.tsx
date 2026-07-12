@@ -14,15 +14,15 @@ type AdObject = {
   active: boolean;
 };
 
-// Built-in fallback ads so they are guaranteed to load instantly on Vercel
+// Built-in fallback ads with the added test GIF
 const DEFAULT_ADS: AdObject[] = [
   {
     "id": "test-ad-5s",
     "title": "5-Second Test Ad",
     "content": "This street billboard will stay active for exactly 5 seconds.",
     "link": "https://google.com",
-    "image": "",
-    "mediaType": "image",
+    "image": "/assets/ads/testing.gif",
+    "mediaType": "gif",
     "displayTime": 5000,
     "frequency": 100,
     "placement": "bottom",
@@ -67,7 +67,6 @@ const DEFAULT_ADS: AdObject[] = [
 ];
 
 export default function AdCreator() {
-  // Initialize directly with the test ads so there is zero delay
   const [ads, setAds] = useState<AdObject[]>(DEFAULT_ADS);
   const [currentAdIndex, setCurrentAdIndex] = useState<number>(0);
   const [showBillboard, setShowBillboard] = useState(false);
@@ -153,9 +152,7 @@ export default function AdCreator() {
           setAds(data.filter((ad) => ad.active !== false));
         }
       })
-      .catch(() => {
-        // Silently keep using DEFAULT_ADS if fetch fails
-      });
+      .catch(() => {});
   }, [menuOpen]);
 
   // 3. Rotation Loop Engine
@@ -277,7 +274,7 @@ export default function AdCreator() {
               <textarea rows={2} className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm resize-none" placeholder="Description (HTML allowed)" value={content} onChange={(e) => setContent(e.target.value)} />
               <div className="grid grid-cols-2 gap-3">
                 <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="Link URL" value={link} onChange={(e) => setLink(e.target.value)} />
-                <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="File name (e.g., banner.png)" value={imageName} onChange={(e) => imageName(e.target.value)} />
+                <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="File name (e.g., banner.png)" value={imageName} onChange={(e) => setImageName(e.target.value)} />
               </div>
               <div className="grid grid-cols-3 gap-3 bg-zinc-950/40 p-3 rounded-lg border border-zinc-800 text-xs">
                 <div className="flex flex-col gap-1">
