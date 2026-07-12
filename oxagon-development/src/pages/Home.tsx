@@ -37,21 +37,30 @@ export default function Home() {
           ))}
         </motion.h1>
 
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            to="/explore"
-            className="px-8 py-3 rounded-full bg-white text-black font-medium hover:bg-gray-200 transition-colors cursor-pointer w-64 text-center"
-          >
-            Explore
-          </Link>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4"
+        >
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Link
+              to="/explore"
+              className="px-8 py-3 rounded-full bg-white text-black font-medium hover:bg-gray-200 transition-colors cursor-pointer w-64 text-center inline-block"
+            >
+              Explore
+            </Link>
+          </motion.div>
 
-          <Link
-            to="/policies"
-            className="px-8 py-3 rounded-full bg-white/10 text-white font-medium hover:bg-white/20 border border-white/10 transition-colors"
-          >
-            Policies
-          </Link>
-        </div>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Link
+              to="/policies"
+              className="px-8 py-3 rounded-full bg-white/10 text-white font-medium hover:bg-white/20 border border-white/10 transition-colors inline-block"
+            >
+              Policies
+            </Link>
+          </motion.div>
+        </motion.div>
       </main>
     </div>
   );
