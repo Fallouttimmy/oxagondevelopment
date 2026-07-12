@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 export default function AdCreator() {
   const [open, setOpen] = useState(false);
-  const [countdown, setCountdown] = useState<number | null>(null);
+  const [remaining, setRemaining] = useState<number | null>(null);
   const pressed = useRef<Record<string, boolean>>({});
   const timer = useRef<number | null>(null);
 
@@ -18,14 +18,18 @@ export default function AdCreator() {
   const [active, setActive] = useState(true);
   const [copied, setCopied] = useState(false);
 
+  const HOLD_SECONDS = 3; // how long to hold 'a'
+
   useEffect(() => {
     function down(e: KeyboardEvent) {
-      pressed.current[e.key.toLowerCase()] = true;
-      checkComboStart();
+      const k = e.key.toLowerCase();
+      pressed.current[k] = true;
+      if (k === "a") startHold();
     }
     function up(e: KeyboardEvent) {
-      pressed.current[e.key.toLowerCase()] = false;
-      cancelCombo();
+      const k = e.key.toLowerCase();
+      pressed.current[k] = false;
+      if (k === "a") cancelHold();
     }
 
     window.addEventListener("keydown", down);
@@ -33,42 +37,39 @@ export default function AdCreator() {
     return () => {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
+      if (timer.current) {
+        window.clearInterval(timer.current);
+        timer.current = null;
+      }
     };
   }, []);
 
-  function comboPressed() {
-    // check if a,s,d,f are pressed (no shift required)
-    const p = pressed.current;
-    return p["a"] && p["s"] && p["d"] && p["f"];
-  }
-
-  function checkComboStart() {
-    if (comboPressed() && timer.current == null) {
-      // start 10s countdown
-      let remaining = 10;
-      setCountdown(remaining);
-      timer.current = window.setInterval(() => {
-        remaining -= 1;
-        setCountdown(remaining);
-        if (remaining <= 0) {
-          // open modal
-          if (timer.current) {
-            window.clearInterval(timer.current);
-            timer.current = null;
-          }
-          setCountdown(null);
-          setOpen(true);
+  function startHold() {
+    // don't start if already counting or modal open
+    if (timer.current != null || open) return;
+    setRemaining(HOLD_SECONDS);
+    let secs = HOLD_SECONDS;
+    timer.current = window.setInterval(() => {
+      secs -= 1;
+      if (secs <= 0) {
+        if (timer.current) {
+          window.clearInterval(timer.current);
+          timer.current = null;
         }
-      }, 1000) as unknown as number;
-    }
+        setRemaining(null);
+        setOpen(true);
+        return;
+      }
+      setRemaining(secs);
+    }, 1000) as unknown as number;
   }
 
-  function cancelCombo() {
-    if (!comboPressed() && timer.current != null) {
+  function cancelHold() {
+    if (timer.current != null) {
       window.clearInterval(timer.current);
       timer.current = null;
-      setCountdown(null);
     }
+    setRemaining(null);
   }
 
   function generateId(text: string) {
@@ -104,11 +105,55 @@ export default function AdCreator() {
     }
   }
 
+  // spinner click while holding 'a' opens modal immediately
+  function onSpinnerClick() {
+    if (pressed.current["a"]) {
+      if (timer.current) {
+        window.clearInterval(timer.current);
+        timer.current = null;
+      }
+      setRemaining(null);
+      setOpen(true);
+    }
+  }
+
+  // progress ring calculations
+  const total = HOLD_SECONDS;
+  const rem = remaining ?? 0;
+  const progress = (total - rem) / total; // 0..1
+  const radius = 16;
+  const circumference = 2 * Math.PI * radius;
+  const dashoffset = circumference * (1 - progress);
+
   return (
     <>
-      {/* small hidden indicator when countdown active */}
-      {countdown != null && (
-        <div className="fixed right-4 top-20 z-50 px-3 py-1 rounded bg-white/10 text-sm text-white">Opening ad creator in {countdown}s</div>
+      {/* spinner indicator top-right when holding 'a' */}
+      {remaining != null && (
+        <div className="fixed right-4 top-4 z-50">
+          <button
+            onClick={onSpinnerClick}
+            className="w-12 h-12 rounded-full bg-white/6 flex items-center justify-center border border-white/10 hover:bg-white/8"
+            aria-label="Open ad creator"
+            title="Click to open ad creator while holding 'a'"
+          >
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <g transform="translate(20,20)">
+                <circle r={radius} stroke="rgba(255,255,255,0.08)" strokeWidth="4" fill="transparent" />
+                <circle
+                  r={radius}
+                  stroke="#ffffff"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  fill="transparent"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={dashoffset}
+                  style={{ transition: "stroke-dashoffset 300ms linear" }}
+                />
+                <text x="0" y="3" textAnchor="middle" fontSize="10" fill="#fff">{rem}</text>
+              </g>
+            </svg>
+          </button>
+        </div>
       )}
 
       {open && (
@@ -151,12 +196,20 @@ export default function AdCreator() {
 
               <div className="flex gap-2 mt-2">
                 <button onClick={copyJSON} className="px-3 py-2 rounded bg-white text-black font-medium">Copy JSON</button>
-                <button onClick={() => { const sample = buildAdObject(); navigator.clipboard.writeText(JSON.stringify(sample, null, 2)); }} className="px-3 py-2 rounded border border-white/10 text-sm">Copy preview</button>
+                <button
+                  onClick={() => {
+                    const sample = buildAdObject();
+                    navigator.clipboard.writeText(JSON.stringify(sample, null, 2));
+                  }}
+                  className="px-3 py-2 rounded border border-white/10 text-sm"
+                >
+                  Copy preview
+                </button>
                 <button onClick={() => setOpen(false)} className="px-3 py-2 rounded border border-white/10 text-sm">Close</button>
                 {copied && <div className="ml-2 text-sm text-green-400">Copied!</div>}
               </div>
 
-              <div className="mt-2 text-xs text-gray-400">Tip: Hold A+S+D+F for 10s anywhere to open this creator.</div>
+              <div className="mt-2 text-xs text-gray-400">Tip: Hold A for 3s anywhere and click the circle while holding to open this creator.</div>
             </div>
           </div>
         </div>
