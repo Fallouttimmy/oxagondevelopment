@@ -45,7 +45,6 @@ export default function AdCreator() {
   }, []);
 
   function startHold() {
-    // don't start if already counting or modal open
     if (timer.current != null || open) return;
     setRemaining(HOLD_SECONDS);
     let secs = HOLD_SECONDS;
@@ -105,7 +104,6 @@ export default function AdCreator() {
     }
   }
 
-  // spinner click while holding 'k' opens modal immediately
   function onSpinnerClick() {
     if (pressed.current["k"]) {
       if (timer.current) {
@@ -117,10 +115,9 @@ export default function AdCreator() {
     }
   }
 
-  // progress ring calculations
   const total = HOLD_SECONDS;
   const rem = remaining ?? 0;
-  const progress = (total - rem) / total; // 0..1
+  const progress = (total - rem) / total; 
   const radius = 16;
   const circumference = 2 * Math.PI * radius;
   const dashoffset = circumference * (1 - progress);
@@ -159,7 +156,7 @@ export default function AdCreator() {
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-          <div className="relative z-10 w-[92%] max-w-2xl bg-black/70 border border-white/10 rounded-lg p-6">
+          <div className="relative z-10 w-[92%] max-w-2xl bg-black/70 border border-white/10 rounded-lg p-6 max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold">Quick Ad Creator</h3>
             <p className="text-sm text-gray-300 mt-1">Fill the fields, then click "Copy JSON" to paste into <code>/oxagon-development/ads.json</code>.</p>
 
@@ -209,7 +206,24 @@ export default function AdCreator() {
                 {copied && <div className="ml-2 text-sm text-green-400">Copied!</div>}
               </div>
 
-              <div className="mt-2 text-xs text-gray-400">Tip: Hold K for 3s anywhere and click the circle while holding to open this creator.</div>
+              {/* Documentation section safely escaped with template string literals to prevent Vite compile crashes */}
+              <div className="mt-4 pt-4 border-t border-white/10 text-xs text-gray-400">
+                Click the pencil (Edit) icon to update the JSON or add a new ad object. Each ad is a simple object with these fields:
+                <pre className="mt-2 p-2 rounded bg-black/60 text-xs overflow-auto">{`{
+  "id": "ad-1",
+  "title": "My Project",
+  "content": "<strong>Short blurb about the project</strong>",
+  "link": "https://oxagondevelopment.com",
+  "image": "/assets/ads/banner.png",
+  "mediaType": "image",
+  "displayTime": 5000,
+  "frequency": 20,
+  "placement": "bottom",
+  "active": true
+}`}</pre>
+              </div>
+
+              <div className="mt-2 text-xs text-gray-500">Tip: Hold K for 3s anywhere and click the circle while holding to open this creator.</div>
             </div>
           </div>
         </div>
