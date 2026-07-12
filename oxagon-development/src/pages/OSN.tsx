@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function OSN() {
   return (
-    <div className="min-h-screen bg-black text-white p-8">
+    <div className="min-h-screen bg-black text-white p-8 pt-20">
       <main className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold">OSN — Oxagon Server Network</h1>
         <p className="mt-4 text-gray-300">
