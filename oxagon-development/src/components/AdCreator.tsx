@@ -37,7 +37,7 @@ export default function AdCreator() {
   const [active, setActive] = useState(true);
   const [copied, setCopied] = useState(false);
 
-  // 1. Hotkey Detector (Shift + A + S + D + F for 10 Seconds)
+  // 1. Fixed Hotkey Detector Loop
   useEffect(() => {
     function checkKeys() {
       const isMatching =
@@ -51,10 +51,14 @@ export default function AdCreator() {
         if (holdTimer.current === null && !showTriggerButton && !menuOpen) {
           holdTimer.current = window.setTimeout(() => {
             setShowTriggerButton(true);
-          }, 10000);
+          }, 10000); // 10 seconds requirement
         }
       } else {
-        clearHold();
+        // Only reset the timer if the button hasn't spawned yet. 
+        // This keeps the button on screen so you can click it!
+        if (!showTriggerButton) {
+          clearHold();
+        }
       }
     }
 
@@ -63,7 +67,6 @@ export default function AdCreator() {
         window.clearTimeout(holdTimer.current);
         holdTimer.current = null;
       }
-      setShowTriggerButton(false);
     }
 
     function down(e: KeyboardEvent) {
@@ -154,15 +157,15 @@ export default function AdCreator() {
 
   return (
     <>
-      {/* Secret Trigger Button */}
+      {/* Secret Trigger Button (Top Right View Layout) */}
       {showTriggerButton && (
-        <div className="fixed right-6 top-6 z-50">
+        <div className="fixed right-6 top-24 z-50">
           <button
             onClick={() => {
               setShowTriggerButton(false);
               setMenuOpen(true);
             }}
-            className="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-500 border-2 border-white text-white font-black text-xl shadow-2xl flex items-center justify-center animate-bounce"
+            className="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-500 border-2 border-white text-white font-black text-xl shadow-2xl flex items-center justify-center animate-bounce cursor-pointer pointer-events-auto"
           >
             A
           </button>
@@ -217,7 +220,7 @@ export default function AdCreator() {
               <textarea rows={2} className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm resize-none" placeholder="Description (HTML allowed)" value={content} onChange={(e) => setContent(e.target.value)} />
               <div className="grid grid-cols-2 gap-3">
                 <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="Link URL" value={link} onChange={(e) => setLink(e.target.value)} />
-                <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="File name (e.g., banner.png)" value={imageName} onChange={(e) => setImageName(e.target.value)} />
+                <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="File name (e.g., banner.png)" value={imageName} onChange={(e) => imageName(e.target.value)} />
               </div>
               <div className="grid grid-cols-3 gap-3 bg-zinc-950/40 p-3 rounded-lg border border-zinc-800 text-xs">
                 <div className="flex flex-col gap-1">
