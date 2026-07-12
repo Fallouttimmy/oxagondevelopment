@@ -1,0 +1,10 @@
+[
+  {
+    "id": "example-1",
+    "title": "Example Project",
+    "content": "<strong>Example Project</strong> — A short description about the example project.",
+    "link": "https://example.com",
+    "image": "",
+    "active": true
+  }
+]
