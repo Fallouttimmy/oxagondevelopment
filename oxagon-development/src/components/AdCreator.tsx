@@ -37,9 +37,9 @@ export default function AdCreator() {
   }, []);
 
   function comboPressed() {
-    // check if a,s,d,f and shift are pressed
+    // check if a,s,d,f are pressed (no shift required)
     const p = pressed.current;
-    return p["a"] && p["s"] && p["d"] && p["f"] && (p["shift"] || p["shiftleft"] || p["shiftright"]);
+    return p["a"] && p["s"] && p["d"] && p["f"];
   }
 
   function checkComboStart() {
@@ -156,7 +156,7 @@ export default function AdCreator() {
                 {copied && <div className="ml-2 text-sm text-green-400">Copied!</div>}
               </div>
 
-              <div className="mt-2 text-xs text-gray-400">Tip: Hold A+S+D+F + Shift for 10s anywhere to open this creator.</div>
+              <div className="mt-2 text-xs text-gray-400">Tip: Hold A+S+D+F for 10s anywhere to open this creator.</div>
             </div>
           </div>
         </div>
