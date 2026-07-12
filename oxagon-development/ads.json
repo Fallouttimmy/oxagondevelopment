@@ -1,21 +1,49 @@
 [
   {
-    "id": "example-1",
-    "title": "Example Project",
-    "content": "<strong>Example Project</strong> — A short description about the example project.",
-    "link": "https://example.com",
-    "image": "",
-    "active": true
-  },
-  {
-    "id": "test-ad",
-    "title": "test ad",
-    "content": "This is a test",
+    "id": "test-ad-5s",
+    "title": "5-Second Test Ad",
+    "content": "This street billboard will stay active for exactly 5 seconds.",
     "link": "",
     "image": "",
     "mediaType": "image",
     "displayTime": 5000,
-    "frequency": 50,
+    "frequency": 100,
+    "placement": "bottom",
+    "active": true
+  },
+  {
+    "id": "test-ad-4s",
+    "title": "4-Second Test Ad",
+    "content": "This street billboard will stay active for exactly 4 seconds.",
+    "link": "",
+    "image": "",
+    "mediaType": "image",
+    "displayTime": 4000,
+    "frequency": 100,
+    "placement": "bottom",
+    "active": true
+  },
+  {
+    "id": "test-ad-3s",
+    "title": "3-Second Test Ad",
+    "content": "This street billboard will stay active for exactly 3 seconds.",
+    "link": "",
+    "image": "",
+    "mediaType": "image",
+    "displayTime": 3000,
+    "frequency": 100,
+    "placement": "bottom",
+    "active": true
+  },
+  {
+    "id": "test-ad-2s",
+    "title": "2-Second Test Ad",
+    "content": "This street billboard will stay active for exactly 2 seconds.",
+    "link": "",
+    "image": "",
+    "mediaType": "image",
+    "displayTime": 2000,
+    "frequency": 100,
     "placement": "bottom",
     "active": true
   }
