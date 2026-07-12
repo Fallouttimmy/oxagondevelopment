@@ -24,12 +24,12 @@ export default function AdCreator() {
     function down(e: KeyboardEvent) {
       const k = e.key.toLowerCase();
       pressed.current[k] = true;
-      if (k === "k") startHold(); // Changed from "a" to "k"
+      if (k === "k") startHold();
     }
     function up(e: KeyboardEvent) {
       const k = e.key.toLowerCase();
       pressed.current[k] = false;
-      if (k === "k") cancelHold(); // Changed from "a" to "k"
+      if (k === "k") cancelHold();
     }
 
     window.addEventListener("keydown", down);
@@ -107,7 +107,7 @@ export default function AdCreator() {
 
   // spinner click while holding 'k' opens modal immediately
   function onSpinnerClick() {
-    if (pressed.current["k"]) { // Changed from "a" to "k"
+    if (pressed.current["k"]) {
       if (timer.current) {
         window.clearInterval(timer.current);
         timer.current = null;
@@ -197,7 +197,7 @@ export default function AdCreator() {
               <div className="flex gap-2 mt-2">
                 <button onClick={copyJSON} className="px-3 py-2 rounded bg-white text-black font-medium">Copy JSON</button>
                 <button
-                  onClick={--- => {
+                  onClick={() => {
                     const sample = buildAdObject();
                     navigator.clipboard.writeText(JSON.stringify(sample, null, 2));
                   }}
