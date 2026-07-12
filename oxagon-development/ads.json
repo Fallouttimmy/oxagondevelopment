@@ -6,17 +6,17 @@
     "link": "https://example.com",
     "image": "",
     "active": true
+  },
+  {
+    "id": "test-ad",
+    "title": "test ad",
+    "content": "This is a test",
+    "link": "",
+    "image": "",
+    "mediaType": "image",
+    "displayTime": 5000,
+    "frequency": 50,
+    "placement": "bottom",
+    "active": true
   }
 ]
-{
-  "id": "test-ad",
-  "title": "test ad",
-  "content": "This is a test",
-  "link": "",
-  "image": "",
-  "mediaType": "image",
-  "displayTime": 5000,
-  "frequency": 50,
-  "placement": "bottom",
-  "active": true
-}
