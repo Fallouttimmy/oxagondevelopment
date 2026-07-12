@@ -14,7 +14,7 @@ type AdObject = {
   active: boolean;
 };
 
-export default function AdSystem() {
+export default function AdCreator() {
   const [ads, setAds] = useState<AdObject[]>([]);
   const [currentAdIndex, setCurrentAdIndex] = useState<number>(0);
   const [showBillboard, setShowBillboard] = useState(false);
