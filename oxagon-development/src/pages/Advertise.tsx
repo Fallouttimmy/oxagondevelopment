@@ -104,14 +104,16 @@ export default function Advertise() {
               </li>
               <li>
                 Click the pencil (Edit) icon to update the JSON or add a new ad object. Each ad is a simple object with these fields:
-                <pre className="mt-2 p-2 rounded bg-black/60 text-xs overflow-auto">{
+                
+                {/* Fixed template literal block below */}
+                <pre className="mt-2 p-2 rounded bg-black/60 text-xs overflow-auto">{`{
   "id": "ad-1",
   "title": "My Project",
-  "content": "&lt;strong&gt;Short blurb about the project&lt;/strong&gt;",
+  "content": "<strong>Short blurb about the project</strong>",
   "link": "https://example.com",
   "image": "/path/to/image.png",
   "active": true
-}</pre>
+}`}</pre>
               </li>
               <li>Save the file and commit (enter a short commit message). GitHub (or your hosting service) will redeploy the site and the new ad will appear automatically.</li>
             </ol>
