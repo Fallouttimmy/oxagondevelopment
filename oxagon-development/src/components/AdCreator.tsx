@@ -18,18 +18,18 @@ export default function AdCreator() {
   const [active, setActive] = useState(true);
   const [copied, setCopied] = useState(false);
 
-  const HOLD_SECONDS = 3; // how long to hold 'a'
+  const HOLD_SECONDS = 3; // how long to hold 'k'
 
   useEffect(() => {
     function down(e: KeyboardEvent) {
       const k = e.key.toLowerCase();
       pressed.current[k] = true;
-      if (k === "a") startHold();
+      if (k === "k") startHold(); // Changed from "a" to "k"
     }
     function up(e: KeyboardEvent) {
       const k = e.key.toLowerCase();
       pressed.current[k] = false;
-      if (k === "a") cancelHold();
+      if (k === "k") cancelHold(); // Changed from "a" to "k"
     }
 
     window.addEventListener("keydown", down);
@@ -105,9 +105,9 @@ export default function AdCreator() {
     }
   }
 
-  // spinner click while holding 'a' opens modal immediately
+  // spinner click while holding 'k' opens modal immediately
   function onSpinnerClick() {
-    if (pressed.current["a"]) {
+    if (pressed.current["k"]) { // Changed from "a" to "k"
       if (timer.current) {
         window.clearInterval(timer.current);
         timer.current = null;
@@ -127,14 +127,14 @@ export default function AdCreator() {
 
   return (
     <>
-      {/* spinner indicator top-right when holding 'a' */}
+      {/* spinner indicator top-right when holding 'k' */}
       {remaining != null && (
         <div className="fixed right-4 top-4 z-50">
           <button
             onClick={onSpinnerClick}
             className="w-12 h-12 rounded-full bg-white/6 flex items-center justify-center border border-white/10 hover:bg-white/8"
             aria-label="Open ad creator"
-            title="Click to open ad creator while holding 'a'"
+            title="Click to open ad creator while holding 'k'"
           >
             <svg width="40" height="40" viewBox="0 0 40 40">
               <g transform="translate(20,20)">
@@ -197,7 +197,7 @@ export default function AdCreator() {
               <div className="flex gap-2 mt-2">
                 <button onClick={copyJSON} className="px-3 py-2 rounded bg-white text-black font-medium">Copy JSON</button>
                 <button
-                  onClick={() => {
+                  onClick={--- => {
                     const sample = buildAdObject();
                     navigator.clipboard.writeText(JSON.stringify(sample, null, 2));
                   }}
@@ -209,7 +209,7 @@ export default function AdCreator() {
                 {copied && <div className="ml-2 text-sm text-green-400">Copied!</div>}
               </div>
 
-              <div className="mt-2 text-xs text-gray-400">Tip: Hold A for 3s anywhere and click the circle while holding to open this creator.</div>
+              <div className="mt-2 text-xs text-gray-400">Tip: Hold K for 3s anywhere and click the circle while holding to open this creator.</div>
             </div>
           </div>
         </div>
