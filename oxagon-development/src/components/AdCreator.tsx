@@ -14,8 +14,61 @@ type AdObject = {
   active: boolean;
 };
 
+// Built-in fallback ads so they are guaranteed to load instantly on Vercel
+const DEFAULT_ADS: AdObject[] = [
+  {
+    "id": "test-ad-5s",
+    "title": "5-Second Test Ad",
+    "content": "This street billboard will stay active for exactly 5 seconds.",
+    "link": "https://google.com",
+    "image": "",
+    "mediaType": "image",
+    "displayTime": 5000,
+    "frequency": 100,
+    "placement": "bottom",
+    "active": true
+  },
+  {
+    "id": "test-ad-4s",
+    "title": "4-Second Test Ad",
+    "content": "This street billboard will stay active for exactly 4 seconds.",
+    "link": "",
+    "image": "",
+    "mediaType": "image",
+    "displayTime": 4000,
+    "frequency": 100,
+    "placement": "bottom",
+    "active": true
+  },
+  {
+    "id": "test-ad-3s",
+    "title": "3-Second Test Ad",
+    "content": "This street billboard will stay active for exactly 3 seconds.",
+    "link": "",
+    "image": "",
+    "mediaType": "image",
+    "displayTime": 3000,
+    "frequency": 100,
+    "placement": "bottom",
+    "active": true
+  },
+  {
+    "id": "test-ad-2s",
+    "title": "2-Second Test Ad",
+    "content": "This street billboard will stay active for exactly 2 seconds.",
+    "link": "",
+    "image": "",
+    "mediaType": "image",
+    "displayTime": 2000,
+    "frequency": 100,
+    "placement": "bottom",
+    "active": true
+  }
+];
+
 export default function AdCreator() {
-  const [ads, setAds] = useState<AdObject[]>([]);
+  // Initialize directly with the test ads so there is zero delay
+  const [ads, setAds] = useState<AdObject[]>(DEFAULT_ADS);
   const [currentAdIndex, setCurrentAdIndex] = useState<number>(0);
   const [showBillboard, setShowBillboard] = useState(false);
   
@@ -37,25 +90,24 @@ export default function AdCreator() {
   const [active, setActive] = useState(true);
   const [copied, setCopied] = useState(false);
 
-  // 1. Fixed Hotkey Detector Loop
+  // 1. Hotkey Detector Loop
   useEffect(() => {
     function checkKeys() {
-      const isMatching =
+      const holdK = keysPressed.current["k"];
+      const combo =
         keysPressed.current["a"] &&
         keysPressed.current["s"] &&
         keysPressed.current["d"] &&
         keysPressed.current["f"] &&
         keysPressed.current["shift"];
 
-      if (isMatching) {
+      if (holdK || combo) {
         if (holdTimer.current === null && !showTriggerButton && !menuOpen) {
           holdTimer.current = window.setTimeout(() => {
             setShowTriggerButton(true);
-          }, 10000); // 10 seconds requirement
+          }, 10000); 
         }
       } else {
-        // Only reset the timer if the button hasn't spawned yet. 
-        // This keeps the button on screen so you can click it!
         if (!showTriggerButton) {
           clearHold();
         }
@@ -70,16 +122,16 @@ export default function AdCreator() {
     }
 
     function down(e: KeyboardEvent) {
+      if (e.repeat) return;
       const key = e.key.toLowerCase();
       keysPressed.current[key] = true;
-      if (e.shiftKey) keysPressed.current["shift"] = true;
       checkKeys();
     }
 
     function up(e: KeyboardEvent) {
       const key = e.key.toLowerCase();
       keysPressed.current[key] = false;
-      if (!e.shiftKey) keysPressed.current["shift"] = false;
+      if (key === "shift") keysPressed.current["shift"] = false;
       checkKeys();
     }
 
@@ -92,18 +144,21 @@ export default function AdCreator() {
     };
   }, [showTriggerButton, menuOpen]);
 
-  // 2. Load and Rotate Ads
+  // 2. Try loading live data, fall back to defaults if server layout 404s
   useEffect(() => {
     fetch("/ads.json")
-      .then((res) => (res.ok ? res.json() : []))
+      .then((res) => (res.ok ? res.json() : null))
       .then((data: AdObject[]) => {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           setAds(data.filter((ad) => ad.active !== false));
         }
       })
-      .catch(() => setAds([]));
+      .catch(() => {
+        // Silently keep using DEFAULT_ADS if fetch fails
+      });
   }, [menuOpen]);
 
+  // 3. Rotation Loop Engine
   useEffect(() => {
     if (ads.length === 0) {
       setShowBillboard(false);
@@ -111,6 +166,8 @@ export default function AdCreator() {
     }
 
     const currentAd = ads[currentAdIndex];
+    if (!currentAd) return;
+
     const rollDice = Math.random() * 100;
     const shouldDisplay = rollDice <= (currentAd.frequency ?? 20);
 
@@ -157,23 +214,23 @@ export default function AdCreator() {
 
   return (
     <>
-      {/* Secret Trigger Button (Top Right View Layout) */}
+      {/* Secret Trigger Button */}
       {showTriggerButton && (
-        <div className="fixed right-6 top-24 z-50">
+        <div className="fixed right-6 top-24 z-[9999]">
           <button
             onClick={() => {
               setShowTriggerButton(false);
               setMenuOpen(true);
             }}
-            className="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-500 border-2 border-white text-white font-black text-xl shadow-2xl flex items-center justify-center animate-bounce cursor-pointer pointer-events-auto"
+            className="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-500 border-2 border-white text-white font-black text-xl shadow-2xl flex items-center justify-center animate-bounce cursor-pointer"
           >
             A
           </button>
         </div>
       )}
 
-      {/* Street Billboard Banner */}
-      <div className={`fixed left-0 right-0 z-40 pointer-events-none p-4 flex justify-center ${activeAd?.placement === "top" ? "top-0" : "bottom-0"}`}>
+      {/* Street Billboard Banner Layout */}
+      <div className={`fixed left-0 right-0 z-[9998] pointer-events-none p-4 flex justify-center ${activeAd?.placement === "top" ? "top-0" : "bottom-0"}`}>
         <AnimatePresence mode="wait">
           {showBillboard && activeAd && (
             <motion.div
@@ -182,7 +239,7 @@ export default function AdCreator() {
               animate={{ opacity: 1, rotateX: 0, y: 0 }}
               exit={{ opacity: 0, rotateX: 90, y: -40 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
-              className="w-full max-w-4xl bg-zinc-950/95 border border-zinc-800 backdrop-blur-md rounded-xl p-3 shadow-2xl pointer-events-auto flex items-center justify-between gap-4 text-white overflow-hidden"
+              className="w-full max-w-4xl bg-zinc-950/95 border border-zinc-800 backdrop-blur-md rounded-xl p-4 shadow-2xl pointer-events-auto flex items-center justify-between gap-4 text-white overflow-hidden"
             >
               <div className="flex items-center gap-4 flex-1">
                 {activeAd.image && (
@@ -211,7 +268,7 @@ export default function AdCreator() {
 
       {/* Creator Panel Dialog Context Overlay */}
       {menuOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" onClick={() => setMenuOpen(false)} />
           <div className="relative z-10 w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-2xl text-zinc-100 max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl font-bold text-white">Oxagon Ad Creator</h3>
