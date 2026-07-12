@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
+// ==========================================
+// 🎛️ ADS MASTER SWITCH
+// Change this to true to show ads, or false to hide them completely!
+const ADS_ENABLED = false; 
+// ==========================================
+
 type AdObject = {
   id: string;
   title: string;
@@ -145,6 +151,7 @@ export default function AdCreator() {
 
   // 2. Try loading live data, fall back to defaults if server layout 404s
   useEffect(() => {
+    if (!ADS_ENABLED) return;
     fetch("/ads.json")
       .then((res) => (res.ok ? res.json() : null))
       .then((data: AdObject[]) => {
@@ -157,7 +164,7 @@ export default function AdCreator() {
 
   // 3. Rotation Loop Engine
   useEffect(() => {
-    if (ads.length === 0) {
+    if (!ADS_ENABLED || ads.length === 0) {
       setShowBillboard(false);
       return;
     }
@@ -229,7 +236,7 @@ export default function AdCreator() {
       {/* Street Billboard Banner Layout */}
       <div className={`fixed left-0 right-0 z-[9998] pointer-events-none p-4 flex justify-center ${activeAd?.placement === "top" ? "top-0" : "bottom-0"}`}>
         <AnimatePresence mode="wait">
-          {showBillboard && activeAd && (
+          {ADS_ENABLED && showBillboard && activeAd && (
             <motion.div
               key={activeAd.id}
               initial={{ opacity: 0, rotateX: -90, y: 40 }}
@@ -274,7 +281,7 @@ export default function AdCreator() {
               <textarea rows={2} className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm resize-none" placeholder="Description (HTML allowed)" value={content} onChange={(e) => setContent(e.target.value)} />
               <div className="grid grid-cols-2 gap-3">
                 <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="Link URL" value={link} onChange={(e) => setLink(e.target.value)} />
-                <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="File name (e.g., banner.png)" value={imageName} onChange={(e) => setImageName(e.target.value)} />
+                <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="File name (e.g., banner.png)" value={imageName} onChange={(e) => imageName(e.target.value)} />
               </div>
               <div className="grid grid-cols-3 gap-3 bg-zinc-950/40 p-3 rounded-lg border border-zinc-800 text-xs">
                 <div className="flex flex-col gap-1">
@@ -298,7 +305,8 @@ export default function AdCreator() {
                 <button onClick={copyJSON} className="px-4 py-2 bg-white text-black font-bold text-xs rounded">Copy JSON</button>
                 <button onClick={() => setMenuOpen(false)} className="px-4 py-2 bg-zinc-800 text-zinc-300 text-xs rounded border border-zinc-700">Close</button>
               </div>
-              {copied && <div className="text-center text-xs text-green-400 mt-2">Copied! Paste into ads.json on GitHub.</div>}
+              {/* Cleaned up message box */}
+              {copied && <div className="text-center text-xs text-green-400 mt-2">Copied!</div>}
             </div>
           </div>
         </div>
