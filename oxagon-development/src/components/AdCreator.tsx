@@ -1,12 +1,31 @@
 import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
-export default function AdCreator() {
-  const [open, setOpen] = useState(false);
-  const [remaining, setRemaining] = useState<number | null>(null);
-  const pressed = useRef<Record<string, boolean>>({});
-  const timer = useRef<number | null>(null);
+type AdObject = {
+  id: string;
+  title: string;
+  content: string;
+  link?: string;
+  image?: string;
+  mediaType: string;
+  displayTime: number;
+  frequency: number;
+  placement: string;
+  active: boolean;
+};
 
-  // form state
+export default function AdSystem() {
+  const [ads, setAds] = useState<AdObject[]>([]);
+  const [currentAdIndex, setCurrentAdIndex] = useState<number>(0);
+  const [showBillboard, setShowBillboard] = useState(false);
+  
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showTriggerButton, setShowTriggerButton] = useState(false);
+  
+  const keysPressed = useRef<Record<string, boolean>>({});
+  const holdTimer = useRef<number | null>(null);
+
+  // Form States
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [link, setLink] = useState("");
@@ -18,18 +37,47 @@ export default function AdCreator() {
   const [active, setActive] = useState(true);
   const [copied, setCopied] = useState(false);
 
-  const HOLD_SECONDS = 3; // how long to hold 'k'
-
+  // 1. Hotkey Detector (Shift + A + S + D + F for 10 Seconds)
   useEffect(() => {
-    function down(e: KeyboardEvent) {
-      const k = e.key.toLowerCase();
-      pressed.current[k] = true;
-      if (k === "k") startHold();
+    function checkKeys() {
+      const isMatching =
+        keysPressed.current["a"] &&
+        keysPressed.current["s"] &&
+        keysPressed.current["d"] &&
+        keysPressed.current["f"] &&
+        keysPressed.current["shift"];
+
+      if (isMatching) {
+        if (holdTimer.current === null && !showTriggerButton && !menuOpen) {
+          holdTimer.current = window.setTimeout(() => {
+            setShowTriggerButton(true);
+          }, 10000);
+        }
+      } else {
+        clearHold();
+      }
     }
+
+    function clearHold() {
+      if (holdTimer.current !== null) {
+        window.clearTimeout(holdTimer.current);
+        holdTimer.current = null;
+      }
+      setShowTriggerButton(false);
+    }
+
+    function down(e: KeyboardEvent) {
+      const key = e.key.toLowerCase();
+      keysPressed.current[key] = true;
+      if (e.shiftKey) keysPressed.current["shift"] = true;
+      checkKeys();
+    }
+
     function up(e: KeyboardEvent) {
-      const k = e.key.toLowerCase();
-      pressed.current[k] = false;
-      if (k === "k") cancelHold();
+      const key = e.key.toLowerCase();
+      keysPressed.current[key] = false;
+      if (!e.shiftKey) keysPressed.current["shift"] = false;
+      checkKeys();
     }
 
     window.addEventListener("keydown", down);
@@ -37,193 +85,163 @@ export default function AdCreator() {
     return () => {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
-      if (timer.current) {
-        window.clearInterval(timer.current);
-        timer.current = null;
-      }
+      clearHold();
     };
-  }, []);
+  }, [showTriggerButton, menuOpen]);
 
-  function startHold() {
-    if (timer.current != null || open) return;
-    setRemaining(HOLD_SECONDS);
-    let secs = HOLD_SECONDS;
-    timer.current = window.setInterval(() => {
-      secs -= 1;
-      if (secs <= 0) {
-        if (timer.current) {
-          window.clearInterval(timer.current);
-          timer.current = null;
+  // 2. Load and Rotate Ads
+  useEffect(() => {
+    fetch("/ads.json")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: AdObject[]) => {
+        if (Array.isArray(data)) {
+          setAds(data.filter((ad) => ad.active !== false));
         }
-        setRemaining(null);
-        setOpen(true);
-        return;
-      }
-      setRemaining(secs);
-    }, 1000) as unknown as number;
-  }
+      })
+      .catch(() => setAds([]));
+  }, [menuOpen]);
 
-  function cancelHold() {
-    if (timer.current != null) {
-      window.clearInterval(timer.current);
-      timer.current = null;
+  useEffect(() => {
+    if (ads.length === 0) {
+      setShowBillboard(false);
+      return;
     }
-    setRemaining(null);
-  }
+
+    const currentAd = ads[currentAdIndex];
+    const rollDice = Math.random() * 100;
+    const shouldDisplay = rollDice <= (currentAd.frequency ?? 20);
+
+    setShowBillboard(shouldDisplay);
+    const timing = currentAd.displayTime ? currentAd.displayTime : 5000;
+
+    const rotationLoop = setTimeout(() => {
+      setCurrentAdIndex((prev) => (prev + 1) % ads.length);
+    }, timing);
+
+    return () => clearTimeout(rotationLoop);
+  }, [ads, currentAdIndex]);
 
   function generateId(text: string) {
     return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `ad-${Date.now()}`;
   }
 
   function buildAdObject() {
-    const id = generateId(title || "ad");
-    const imagePath = imageName ? `/assets/ads/${imageName}` : "";
     return {
-      id,
+      id: generateId(title || "ad"),
       title: title || "Untitled Ad",
       content: content || "",
       link: link || "",
-      image: imagePath,
+      image: imageName ? `/assets/ads/${imageName}` : "",
       mediaType,
-      displayTime: displayTime * 1000, // ms
-      frequency: frequency, // percent
+      displayTime: displayTime * 1000,
+      frequency: frequency,
       placement,
       active,
-    } as const;
+    };
   }
 
   async function copyJSON() {
-    const obj = buildAdObject();
-    const json = JSON.stringify(obj, null, 2);
     try {
-      await navigator.clipboard.writeText(json);
+      await navigator.clipboard.writeText(JSON.stringify(buildAdObject(), null, 2));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
     }
   }
 
-  function onSpinnerClick() {
-    if (pressed.current["k"]) {
-      if (timer.current) {
-        window.clearInterval(timer.current);
-        timer.current = null;
-      }
-      setRemaining(null);
-      setOpen(true);
-    }
-  }
-
-  const total = HOLD_SECONDS;
-  const rem = remaining ?? 0;
-  const progress = (total - rem) / total; 
-  const radius = 16;
-  const circumference = 2 * Math.PI * radius;
-  const dashoffset = circumference * (1 - progress);
+  const activeAd = ads[currentAdIndex];
 
   return (
     <>
-      {/* spinner indicator top-right when holding 'k' */}
-      {remaining != null && (
-        <div className="fixed right-4 top-4 z-50">
+      {/* Secret Trigger Button */}
+      {showTriggerButton && (
+        <div className="fixed right-6 top-6 z-50">
           <button
-            onClick={onSpinnerClick}
-            className="w-12 h-12 rounded-full bg-white/6 flex items-center justify-center border border-white/10 hover:bg-white/8"
-            aria-label="Open ad creator"
-            title="Click to open ad creator while holding 'k'"
+            onClick={() => {
+              setShowTriggerButton(false);
+              setMenuOpen(true);
+            }}
+            className="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-500 border-2 border-white text-white font-black text-xl shadow-2xl flex items-center justify-center animate-bounce"
           >
-            <svg width="40" height="40" viewBox="0 0 40 40">
-              <g transform="translate(20,20)">
-                <circle r={radius} stroke="rgba(255,255,255,0.08)" strokeWidth="4" fill="transparent" />
-                <circle
-                  r={radius}
-                  stroke="#ffffff"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  fill="transparent"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={dashoffset}
-                  style={{ transition: "stroke-dashoffset 300ms linear" }}
-                />
-                <text x="0" y="3" textAnchor="middle" fontSize="10" fill="#fff">{rem}</text>
-              </g>
-            </svg>
+            A
           </button>
         </div>
       )}
 
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-          <div className="relative z-10 w-[92%] max-w-2xl bg-black/70 border border-white/10 rounded-lg p-6 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold">Quick Ad Creator</h3>
-            <p className="text-sm text-gray-300 mt-1">Fill the fields, then click "Copy JSON" to paste into <code>/oxagon-development/ads.json</code>.</p>
-
-            <div className="mt-4 grid grid-cols-1 gap-3">
-              <input className="p-2 rounded bg-black/50 border border-white/10" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-              <textarea className="p-2 rounded bg-black/50 border border-white/10" placeholder="Content (HTML allowed)" value={content} onChange={(e) => setContent(e.target.value)} />
-              <input className="p-2 rounded bg-black/50 border border-white/10" placeholder="Link (optional)" value={link} onChange={(e) => setLink(e.target.value)} />
-              <input className="p-2 rounded bg-black/50 border border-white/10" placeholder="Image filename (place under /public/assets/ads/)" value={imageName} onChange={(e) => setImageName(e.target.value)} />
-
-              <div className="flex gap-2">
-                <select value={mediaType} onChange={(e) => setMediaType(e.target.value)} className="p-2 rounded bg-black/50 border border-white/10">
-                  <option value="image">Image</option>
-                  <option value="gif">GIF</option>
-                  <option value="video">Video</option>
-                </select>
-
-                <input type="number" value={displayTime} min={1} onChange={(e) => setDisplayTime(Number(e.target.value))} className="p-2 rounded bg-black/50 border border-white/10" />
-                <div className="text-sm text-gray-300 flex items-center">seconds</div>
-
-                <input type="number" value={frequency} min={0} max={100} onChange={(e) => setFrequency(Number(e.target.value))} className="p-2 rounded bg-black/50 border border-white/10" />
-                <div className="text-sm text-gray-300 flex items-center">% frequency</div>
+      {/* Street Billboard Banner */}
+      <div className={`fixed left-0 right-0 z-40 pointer-events-none p-4 flex justify-center ${activeAd?.placement === "top" ? "top-0" : "bottom-0"}`}>
+        <AnimatePresence mode="wait">
+          {showBillboard && activeAd && (
+            <motion.div
+              key={activeAd.id}
+              initial={{ opacity: 0, rotateX: -90, y: 40 }}
+              animate={{ opacity: 1, rotateX: 0, y: 0 }}
+              exit={{ opacity: 0, rotateX: 90, y: -40 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="w-full max-w-4xl bg-zinc-950/95 border border-zinc-800 backdrop-blur-md rounded-xl p-3 shadow-2xl pointer-events-auto flex items-center justify-between gap-4 text-white overflow-hidden"
+            >
+              <div className="flex items-center gap-4 flex-1">
+                {activeAd.image && (
+                  <div className="w-14 h-14 rounded overflow-hidden bg-zinc-900 flex-shrink-0 border border-zinc-800">
+                    {activeAd.mediaType === "video" ? (
+                      <video src={activeAd.image} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+                    ) : (
+                      <img src={activeAd.image} alt={activeAd.title} className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                )}
+                <div>
+                  <h4 className="font-bold text-sm text-zinc-100">{activeAd.title}</h4>
+                  <div className="text-xs text-zinc-400 mt-0.5" dangerouslySetInnerHTML={{ __html: activeAd.content }} />
+                </div>
               </div>
+              {activeAd.link && (
+                <a href={activeAd.link} target="_blank" rel="noreferrer" className="bg-white hover:bg-zinc-200 text-black text-xs font-bold px-3 py-2 rounded-lg transition-colors flex-shrink-0">
+                  Visit
+                </a>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-              <div className="flex gap-2 items-center">
-                <select value={placement} onChange={(e) => setPlacement(e.target.value)} className="p-2 rounded bg-black/50 border border-white/10">
-                  <option value="bottom">Bottom</option>
-                  <option value="top">Top</option>
-                </select>
-
-                <label className="flex items-center gap-2 text-sm text-gray-300">
-                  <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} /> Active
-                </label>
+      {/* Creator Panel Dialog Context Overlay */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" onClick={() => setMenuOpen(false)} />
+          <div className="relative z-10 w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-2xl text-zinc-100 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-bold text-white">Oxagon Ad Creator</h3>
+            <div className="mt-4 flex flex-col gap-3">
+              <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <textarea rows={2} className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm resize-none" placeholder="Description (HTML allowed)" value={content} onChange={(e) => setContent(e.target.value)} />
+              <div className="grid grid-cols-2 gap-3">
+                <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="Link URL" value={link} onChange={(e) => setLink(e.target.value)} />
+                <input className="p-2.5 rounded bg-zinc-800 border border-zinc-700 text-sm" placeholder="File name (e.g., banner.png)" value={imageName} onChange={(e) => setImageName(e.target.value)} />
               </div>
-
-              <div className="flex gap-2 mt-2">
-                <button onClick={copyJSON} className="px-3 py-2 rounded bg-white text-black font-medium">Copy JSON</button>
-                <button
-                  onClick={() => {
-                    const sample = buildAdObject();
-                    navigator.clipboard.writeText(JSON.stringify(sample, null, 2));
-                  }}
-                  className="px-3 py-2 rounded border border-white/10 text-sm"
-                >
-                  Copy preview
-                </button>
-                <button onClick={() => setOpen(false)} className="px-3 py-2 rounded border border-white/10 text-sm">Close</button>
-                {copied && <div className="ml-2 text-sm text-green-400">Copied!</div>}
+              <div className="grid grid-cols-3 gap-3 bg-zinc-950/40 p-3 rounded-lg border border-zinc-800 text-xs">
+                <div className="flex flex-col gap-1">
+                  <label>Type</label>
+                  <select value={mediaType} onChange={(e) => setMediaType(e.target.value)} className="p-1.5 rounded bg-zinc-800 border border-zinc-700 text-white">
+                    <option value="image">Photo</option>
+                    <option value="gif">GIF</option>
+                    <option value="video">Video (MP4)</option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label>Time (s)</label>
+                  <input type="number" className="p-1 rounded bg-zinc-800 border border-zinc-700 text-white" value={displayTime} onChange={(e) => setDisplayTime(Number(e.target.value))} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label>Frequency (%)</label>
+                  <input type="number" className="p-1 rounded bg-zinc-800 border border-zinc-700 text-white" value={frequency} onChange={(e) => setFrequency(Number(e.target.value))} />
+                </div>
               </div>
-
-              {/* Documentation section safely escaped with template string literals to prevent Vite compile crashes */}
-              <div className="mt-4 pt-4 border-t border-white/10 text-xs text-gray-400">
-                Click the pencil (Edit) icon to update the JSON or add a new ad object. Each ad is a simple object with these fields:
-                <pre className="mt-2 p-2 rounded bg-black/60 text-xs overflow-auto">{`{
-  "id": "ad-1",
-  "title": "My Project",
-  "content": "<strong>Short blurb about the project</strong>",
-  "link": "https://oxagondevelopment.com",
-  "image": "/assets/ads/banner.png",
-  "mediaType": "image",
-  "displayTime": 5000,
-  "frequency": 20,
-  "placement": "bottom",
-  "active": true
-}`}</pre>
+              <div className="flex justify-between mt-4">
+                <button onClick={copyJSON} className="px-4 py-2 bg-white text-black font-bold text-xs rounded">Copy JSON</button>
+                <button onClick={() => setMenuOpen(false)} className="px-4 py-2 bg-zinc-800 text-zinc-300 text-xs rounded border border-zinc-700">Close</button>
               </div>
-
-              <div className="mt-2 text-xs text-gray-500">Tip: Hold K for 3s anywhere and click the circle while holding to open this creator.</div>
+              {copied && <div className="text-center text-xs text-green-400 mt-2">Copied! Paste into ads.json on GitHub.</div>}
             </div>
           </div>
         </div>
