@@ -7,6 +7,7 @@ import Explore from "./pages/Explore";
 import OSN from "./pages/OSN";
 import Advertise from "./pages/Advertise";
 import Creator from "./pages/Creator";
+import AdCreator from "./components/AdCreator";
 
 function AppContent() {
   const location = useLocation();
@@ -32,6 +33,7 @@ function AppContent() {
   return (
     <>
       <Navbar />
+      <AdCreator />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/policies" element={<Policies />} />
